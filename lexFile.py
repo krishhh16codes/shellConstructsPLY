@@ -1,6 +1,7 @@
 import ply.lex as lex
 
 tokens = (
+		'ID',
     'IF',
     'THEN',
     'ELIF',
@@ -109,6 +110,12 @@ def t_NUMBER(t):
 def t_error(t):
     print("Illegal character '%s'" % t.value[0])
     t.lexer.skip(1)
+
+
+def t_ID(t):
+    r'[a-zA-Z_][a-zA-Z0-9_]*'
+    t.type = 'ID'
+    return t
 
 
 t_ignore  = ' \t'

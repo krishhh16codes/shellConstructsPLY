@@ -1,18 +1,20 @@
 import lexFile
 import ply.yacc as yacc
 
-
-tokens = lexFile.tokens
 lexer = lexFile.lexer
+tokens = lexFile.tokens
 
-def p_expression_plus(p):
-    'expression : expression PLUS term'
-    p[0] = p[1] + p[3]
+def p_expression(p):
+	'''expression : expression PLUS term
+								| expression MINUS term'''
 
 
-def p_expression_minus(p):
-    'expression : expression MINUS term'
-    p[0] = p[1] - p[3]
+	if p[2] == '+':
+		p[0] = p[1] + p[3]
+
+	elif p[2] == '-':
+		p[0] = p[1] - p[3]
+
 
 
 def p_expression_term(p):
