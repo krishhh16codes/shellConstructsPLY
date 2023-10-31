@@ -1,6 +1,7 @@
 import sys
 import ply.lex as lex
 
+# Defining Tokens
 tokens = (
 		'SEMICOLON',
 		'DOT',
@@ -49,6 +50,7 @@ tokens = (
     'RPAREN',
 )
 
+# Defining Keywords
 reserved = {
     'if': 'IF',
     'then': 'THEN',
@@ -76,6 +78,7 @@ reserved = {
     '!': 'EXCLAMATION_MARK',
 }
 
+# Matching with regex
 t_DOT = r'\.'
 t_AND = r'a'
 t_GREATERTHAN = r'gt'
@@ -118,11 +121,12 @@ t_DOLLAR = r'\$'
 t_INSERTION = r'\>\>'
 t_SEMICOLON = r';'
 
+
+#lexer rules
 def t_STRING(t):
   r'"[^"]*"'
   t.value = t.value[1:-1]
   return t
-
 
 
 def t_SPACE(t):
@@ -152,6 +156,7 @@ def t_newline(t):
 
 def t_error(t):
 	print(f"Illegal character '{t.value[0]}'")
+	print("Syntax Error")
 	t.lexer.skip(1)
 	sys.exit(1)
 

@@ -1,39 +1,43 @@
+# importing required libraries
 import sys
 import ply.yacc as yacc
 import lexFile
 
+
+#getting tokens and lexer object from lexFile
 tokens = lexFile.tokens
 lexer = lexFile.lexer
 
 start = 'program'
 
 
+# Defining production rules
 def p_program(p):
     '''program : statements'''
     p[0] = p[1]
 
 
 def p_statements(p):
-    '''statements : statement
-                  | statements statement'''
-    if len(p) == 2:
-        p[0] = [p[1]]
-    else:
-        p[0] = p[1] + [p[2]]
+	'''statements : statement
+                | statements statement'''
+
+	if len(p) == 2:
+		p[0] = [p[1]]
+	else:
+		p[0] = p[1] + [p[2]]
 
 
 def p_assignment(p):
-    '''assignment : ID EQUALS expression
-                  | ID EQUALS DOLLAR LPAREN arithmetic_expression RPAREN'''
-    if len(p) == 4:
-        p[0] = ('assignment', p[1], p[3])
-    else:
-        p[0] = ('assignment', p[1], p[5])
+	'''assignment : ID EQUALS expression
+                | ID EQUALS DOLLAR LPAREN arithmetic_expression RPAREN'''
+	if len(p) == 4:
+		p[0] = ('assignment', p[1], p[3])
+	else:
+		p[0] = ('assignment', p[1], p[5])
 
 
 def p_expression(p):
-	'''
-	expression : NUMBER
+	'''expression : NUMBER
 	           | STRING
              | ID
 	           | DOLLAR ID
@@ -44,79 +48,89 @@ def p_expression(p):
 	           | DOLLAR ID expression
 	           | expression DOLLAR ID 
 	           | expression DOLLAR ID expression
-             | LPAREN expression RPAREN
-  '''
+             | LPAREN expression RPAREN'''
+
 	if len(p) == 2:
 		p[0] = p[1]
 
 
 def p_statement(p):
-    '''statement : while_statement
-                 | if_statement
-                 | for_statement
-                 | command
-								 | condition
-                 | assignment
-                 | comment
-	               | arithmetic_expression
-                 | insertion
-                 | pipe_command'''
-    p[0] = p[1]
+	'''statement : while_statement
+               | if_statement
+               | for_statement
+               | command
+	             | condition
+               | assignment
+               | comment
+	             | arithmetic_expression
+               | insertion
+               | pipe_command'''
+	p[0] = p[1]
+
 
 def p_command(p):
-    '''command : ID
-	             
-               | LEFT_BRACE NUMBER DOT DOT NUMBER RIGHT_BRACE
-               | command ID
-               | command NUMBER
-               | command STRING
-               | command MINUS ID
-               | command MINUS MINUS ID
-    '''
-    if len(p) == 2:
-        p[0] = ('command', p[1])
-    elif p[2] == '-' and len(p) == 4:
-        if len(p[3]) == 1:
-            p[0] = ('command', p[1], p[2] + p[3])
-        else:
-            raise SyntaxError("Single character expected after a single '-'")
-    elif p[2] == '-' and len(p) == 3:
-        if len(p[3]) == 1:
-            p[0] = ('command', p[1], p[2] + p[3])
-        else:
-            raise SyntaxError("Single character expected after a single '-'")
-    else:
-        p[0] = ('command', p[1], p[2])
+	'''command : ID
+             | LEFT_BRACE NUMBER DOT DOT NUMBER RIGHT_BRACE
+             | command ID
+             | command NUMBER
+             | command STRING
+             | command MINUS ID
+             | command MINUS MINUS ID'''
+	
+	if len(p) == 2:
+		p[0] = ('command', p[1])
+
+	elif p[2] == '-' and len(p) == 4:
+		if len(p[3]) == 1:
+			p[0] = ('command', p[1], p[2] + p[3])
+		else:
+			raise SyntaxError("Single character expected after a single '-'")
+
+	elif p[2] == '-' and len(p) == 3:
+		if len(p[3]) == 1:
+			p[0] = ('command', p[1], p[2] + p[3])
+		else:
+			raise SyntaxError("Single character expected after a single '-'")
+	
+	else:
+		p[0] = ('command', p[1], p[2])
 
 
 def p_comment(p):
     '''comment : HASHTAG ID'''
     p[0] = ('comment', p[2])
 
+
 def p_insertion(p):
-    '''insertion : command ID INSERTION ID
-		             | command STRING INSERTION ID'''
-    p[0] = ('insertion', p[2], p[3])
+	'''insertion : command ID INSERTION ID
+		           | command STRING INSERTION ID'''
+
+	p[0] = ('insertion', p[2], p[3])
+
 
 def p_pipe_command(p):
     '''pipe_command : command PIPE command'''
     p[0] = ('pipe', p[1], p[3])
 
+
 def p_while_statement(p):
-    '''while_statement : WHILE condition SEMICOLON DO statements DONE'''
-    p[0] = ('while', p[2], p[4])
+	'''while_statement : WHILE condition DO statements DONE
+	                   | WHILE condition SEMICOLON DO statements DONE'''
+
+	p[0] = ('while', p[2], p[4])
+
 
 def p_condition(p):
-    '''condition : LEFT_BRACKET expression RIGHT_BRACKET
-		             | CLEFT_BRACKET expression CRIGHT_BRACKET
-		'''
-    p[0] = ('condition', p[2])
+	'''condition : LEFT_BRACKET expression RIGHT_BRACKET
+		           | CLEFT_BRACKET expression CRIGHT_BRACKET'''
+
+	p[0] = ('condition', p[2])
 
 
 def p_arithmetic_expression(p):
 	'''arithmetic_expression : NUMBER
 	                         | DOLLAR ID
-													 | ID
+	                         | ID
                            | LPAREN arithmetic_expression RPAREN
                            | arithmetic_expression PLUS arithmetic_expression
                            | arithmetic_expression MINUS arithmetic_expression
@@ -125,8 +139,8 @@ def p_arithmetic_expression(p):
                            | arithmetic_expression PLUS EQUALS arithmetic_expression
                            | arithmetic_expression MINUS EQUALS arithmetic_expression
                            | arithmetic_expression TIMES EQUALS arithmetic_expression
-                           | arithmetic_expression DIVIDE EQUALS arithmetic_expression
-	'''
+                           | arithmetic_expression DIVIDE EQUALS arithmetic_expression'''
+
 	if len(p) == 2:
 		p[0] = ('arithmetic_expression', p[1])
 	elif len(p) == 4:
@@ -134,13 +148,13 @@ def p_arithmetic_expression(p):
 
 
 def p_for_statement(p):
-    '''for_statement : FOR ID IN command DO statements DONE'''
-    p[0] = ('for', p[2], p[4], p[6])
+	'''for_statement : FOR ID IN command DO statements DONE'''
+	p[0] = ('for', p[2], p[4], p[6])
 
 
 def p_if_statement(p):
 	'''if_statement : IF condition SEMICOLON THEN statements ELSE statements FI 
-									| IF condition SEMICOLON THEN statements ELIF condition SEMICOLON THEN statements ELSE statements FI
+	                | IF condition SEMICOLON THEN statements ELIF condition SEMICOLON THEN statements ELSE statements FI
 	'''
 	p[0] = ('if', p[2], p[4], p[6])
 
@@ -152,14 +166,53 @@ def p_error(p):
 		print("Syntax error: Unexpected end of input")
 	sys.exit(1)
 
+
+# building parser
 parser = yacc.yacc()
 
-if __name__ == '__main__':
-	input_text = '''
-# lalallalla slakdjasljdalsjd
-'''
+
+# mode 1 which runs like a shell mode 
+def single_statement_mode(parser, lexer):
+	while True:
+		input_text = input(">")
+		print('\n')
+		if input_text == 'exit()':
+			break 
+
+		try:
+			result = parser.parse(input_text, lexer=lexer)
+			print("Correct Syntax")
+		except SyntaxError as e:
+			print(e)
+			sys.exit(1)
+
+
+# mode 2 which runs like a script mode
+def multiple_lines_mode(parser, lexer):
+	code_lines = []
+	print("Enter multiple lines of code. Press Enter twice to check syntax.")
+	while True:
+		line = input("")
+		if not line:
+			break 
+
+		code_lines.append(line)
+		input_text = '\n'.join(code_lines)
+
 	try:
 		result = parser.parse(input_text, lexer=lexer)
 		print("Correct Syntax")
 	except SyntaxError as e:
 		print(e)
+		sys.exit(1)
+
+
+if __name__ == '__main__':
+	choice = input("Enter your choice (1 for single statement mode, 2 for multiple lines mode): ")
+
+	if choice == '1':
+		single_statement_mode(parser, lexer)
+	elif choice == '2':
+		multiple_lines_mode(parser, lexer)
+	else:
+		print("Invalid choice. Please choose 1 or 2.")
