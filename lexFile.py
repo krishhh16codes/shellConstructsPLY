@@ -1,10 +1,17 @@
+import sys
 import ply.lex as lex
 
 tokens = (
+		'SEMICOLON',
+		'DOT',
+		'GREATERTHAN',
+		'EQUALTO',
+		'LESSTHAN',
+		'AND',
 		'STRING',
 		'EQUALS',
     'DOLLAR',
-    'SPACE',  # New token for spaces
+    'SPACE',
     'PIPE',
     'HASHTAG',
     'INSERTION',
@@ -69,6 +76,11 @@ reserved = {
     '!': 'EXCLAMATION_MARK',
 }
 
+t_DOT = r'\.'
+t_AND = r'a'
+t_GREATERTHAN = r'gt'
+t_LESSTHAN = r'lt'
+t_EQUALTO = r'eq'
 t_EQUALS = r'='
 t_HASHTAG = r'\#'
 t_PLUS = r'\+'
@@ -104,42 +116,44 @@ t_EXCLAMATION_MARK = r'!'
 t_PIPE = r'\|'
 t_DOLLAR = r'\$'
 t_INSERTION = r'\>\>'
+t_SEMICOLON = r';'
 
 def t_STRING(t):
-    r'"[^"]*"'
-    t.value = t.value[1:-1]  # Remove the double quotes
-    return t
+  r'"[^"]*"'
+  t.value = t.value[1:-1]
+  return t
 
 
-# Define the SPACE token to match spaces and tabs
+
 def t_SPACE(t):
-    r'[ \t]+'
-    return t
+  r'[ \t]+'
+  return t
 
-# Define the ID token, including '.' and '_' as part of identifiers
+
 def t_ID(t):
-    r'[a-zA-Z_][a-zA-Z0-9_\.]*'
-    t.type = reserved.get(t.value, 'ID')
-    return t
+  r'[a-zA-Z_][a-zA-Z0-9_\.]*'
+  t.type = reserved.get(t.value, 'ID')
+  return t
 
-# Define the NUMBER token to match integers
+
 def t_NUMBER(t):
-    r'\d+'
-    t.value = int(t.value)
-    return t
+  r'\d+'
+  t.value = int(t.value)
+  return t
 
-# Skip over spaces and tabs
+
 t_ignore = ' \t'
 
-# Handle newline
-def t_newline(t):
-    r'\n+'
-    t.lexer.lineno += len(t.value)
 
-# Error handling for unrecognized characters
+def t_newline(t):
+	r'\n+'
+	t.lexer.lineno += len(t.value)
+
+
 def t_error(t):
-    print(f"Illegal character '{t.value[0]}'")
-    t.lexer.skip(1)
+	print(f"Illegal character '{t.value[0]}'")
+	t.lexer.skip(1)
+	sys.exit(1)
 
 lexer = lex.lex()
 

@@ -32,15 +32,22 @@ def p_assignment(p):
 
 
 def p_expression(p):
-    '''
-    expression : NUMBER
-               | STRING
-               | MINUS expression
-               | ID
-               | LPAREN expression RPAREN
-    '''
-    if len(p) == 2:
-        p[0] = p[1]
+	'''
+	expression : NUMBER
+	           | STRING
+             | ID
+	           | DOLLAR ID
+             | MINUS expression
+             | NUMBER expression
+		         | expression NUMBER
+             | expression NUMBER expression
+	           | DOLLAR ID expression
+	           | expression DOLLAR ID 
+	           | expression DOLLAR ID expression
+             | LPAREN expression RPAREN
+  '''
+	if len(p) == 2:
+		p[0] = p[1]
 
 
 def p_statement(p):
@@ -48,6 +55,7 @@ def p_statement(p):
                  | if_statement
                  | for_statement
                  | command
+								 | condition
                  | assignment
                  | comment
 	               | arithmetic_expression
@@ -57,6 +65,8 @@ def p_statement(p):
 
 def p_command(p):
     '''command : ID
+	             
+               | LEFT_BRACE NUMBER DOT DOT NUMBER RIGHT_BRACE
                | command ID
                | command NUMBER
                | command STRING
@@ -93,22 +103,29 @@ def p_pipe_command(p):
     p[0] = ('pipe', p[1], p[3])
 
 def p_while_statement(p):
-    '''while_statement : WHILE condition DO statements DONE'''
+    '''while_statement : WHILE condition SEMICOLON DO statements DONE'''
     p[0] = ('while', p[2], p[4])
 
 def p_condition(p):
-    '''condition : LEFT_BRACKET expression RIGHT_BRACKET'''
+    '''condition : LEFT_BRACKET expression RIGHT_BRACKET
+		             | CLEFT_BRACKET expression CRIGHT_BRACKET
+		'''
     p[0] = ('condition', p[2])
 
 
 def p_arithmetic_expression(p):
 	'''arithmetic_expression : NUMBER
-                           | DOLLAR ID
-	                         | LPAREN arithmetic_expression RPAREN
-	                         | arithmetic_expression PLUS arithmetic_expression
-		                       | arithmetic_expression MINUS arithmetic_expression
-		                       | arithmetic_expression TIMES arithmetic_expression
+	                         | DOLLAR ID
+													 | ID
+                           | LPAREN arithmetic_expression RPAREN
+                           | arithmetic_expression PLUS arithmetic_expression
+                           | arithmetic_expression MINUS arithmetic_expression
+                           | arithmetic_expression TIMES arithmetic_expression
                            | arithmetic_expression DIVIDE arithmetic_expression
+                           | arithmetic_expression PLUS EQUALS arithmetic_expression
+                           | arithmetic_expression MINUS EQUALS arithmetic_expression
+                           | arithmetic_expression TIMES EQUALS arithmetic_expression
+                           | arithmetic_expression DIVIDE EQUALS arithmetic_expression
 	'''
 	if len(p) == 2:
 		p[0] = ('arithmetic_expression', p[1])
@@ -122,8 +139,10 @@ def p_for_statement(p):
 
 
 def p_if_statement(p):
-    '''if_statement : IF condition THEN statements ELSE statements FI'''
-    p[0] = ('if', p[2], p[4], p[6])
+	'''if_statement : IF condition SEMICOLON THEN statements ELSE statements FI 
+									| IF condition SEMICOLON THEN statements ELIF condition SEMICOLON THEN statements ELSE statements FI
+	'''
+	p[0] = ('if', p[2], p[4], p[6])
 
 
 def p_error(p):
@@ -136,9 +155,11 @@ def p_error(p):
 parser = yacc.yacc()
 
 if __name__ == '__main__':
-    input_text = '''asustctl --char 6'''
-    try:
-        result = parser.parse(input_text, lexer=lexer)
-        print("Success")
-    except SyntaxError as e:
-        print(e)
+	input_text = '''
+# lalallalla slakdjasljdalsjd
+'''
+	try:
+		result = parser.parse(input_text, lexer=lexer)
+		print("Correct Syntax")
+	except SyntaxError as e:
+		print(e)
