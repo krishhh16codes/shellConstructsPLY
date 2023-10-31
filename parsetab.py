@@ -6,9 +6,9 @@ _tabversion = '3.10'
 
 _lr_method = 'LALR'
 
-_lr_signature = 'CASE CLEFT_BRACKET COPROC CRIGHT_BRACKET DIVIDE DO DONE ELIF ELSE ESAC EXCLAMATION_MARK FI FOR FUNCTION ID IF IN LEFT_BRACE LEFT_BRACKET LPAREN MINUS NUMBER PLUS RIGHT_BRACE RIGHT_BRACKET RPAREN SELECT THEN TIME TIMES UNTIL WHILEexpression : expression PLUS term\n\t\t\t\t\t\t\t\t| expression MINUS termexpression : termterm : term TIMES factorterm : term DIVIDE factorterm : factorfactor : NUMBERfactor : LPAREN expression RPAREN'
+_lr_signature = 'programCASE CLEFT_BRACKET COPROC CRIGHT_BRACKET DIVIDE DO DOLLAR DONE ELIF ELSE EQUALS ESAC EXCLAMATION_MARK FI FOR FUNCTION HASHTAG ID IF IN INSERTION LEFT_BRACE LEFT_BRACKET LPAREN MINUS NUMBER PIPE PLUS RIGHT_BRACE RIGHT_BRACKET RPAREN SELECT SPACE STRING THEN TIME TIMES UNTIL WHILEprogram : statementsstatements : statement\n                  | statements statementassignment : ID EQUALS expression\n                  | ID EQUALS DOLLAR LPAREN arithmetic_expression RPAREN\n    expression : NUMBER\n               | STRING\n               | MINUS expression\n               | ID\n               | LPAREN expression RPAREN\n    statement : while_statement\n                 | if_statement\n                 | for_statement\n                 | command\n                 | assignment\n                 | comment\n\t               | arithmetic_expression\n                 | insertion\n                 | pipe_commandcommand : ID\n               | command ID\n               | command NUMBER\n               | command STRING\n               | command MINUS ID\n               | command MINUS MINUS ID\n    comment : HASHTAG IDinsertion : command ID INSERTION ID\n\t\t             | command STRING INSERTION IDpipe_command : command PIPE commandwhile_statement : WHILE condition DO statements DONEcondition : LEFT_BRACKET expression RIGHT_BRACKETarithmetic_expression : NUMBER\n                           | DOLLAR ID\n\t                         | LPAREN arithmetic_expression RPAREN\n\t                         | arithmetic_expression PLUS arithmetic_expression\n\t\t                       | arithmetic_expression MINUS arithmetic_expression\n\t\t                       | arithmetic_expression TIMES arithmetic_expression\n                           | arithmetic_expression DIVIDE arithmetic_expression\n\tfor_statement : FOR ID IN command DO statements DONEif_statement : IF condition THEN statements ELSE statements FI'
     
-_lr_action_items = {'NUMBER':([0,5,6,7,8,9,],[4,4,4,4,4,4,]),'LPAREN':([0,5,6,7,8,9,],[5,5,5,5,5,5,]),'$end':([1,2,3,4,11,12,13,14,15,],[0,-3,-6,-7,-1,-2,-4,-5,-8,]),'PLUS':([1,2,3,4,10,11,12,13,14,15,],[6,-3,-6,-7,6,-1,-2,-4,-5,-8,]),'MINUS':([1,2,3,4,10,11,12,13,14,15,],[7,-3,-6,-7,7,-1,-2,-4,-5,-8,]),'RPAREN':([2,3,4,10,11,12,13,14,15,],[-3,-6,-7,15,-1,-2,-4,-5,-8,]),'TIMES':([2,3,4,11,12,13,14,15,],[8,-6,-7,8,8,-4,-5,-8,]),'DIVIDE':([2,3,4,11,12,13,14,15,],[9,-6,-7,9,9,-4,-5,-8,]),}
+_lr_action_items = {'WHILE':([0,2,3,4,5,6,7,8,9,10,11,12,16,17,21,22,23,24,36,38,42,43,44,45,46,47,48,49,51,52,54,56,58,60,61,62,63,64,65,66,68,70,73,74,75,76,78,79,80,81,82,],[13,13,-2,-11,-12,-13,-14,-15,-16,-17,-18,-19,-20,-32,-3,-21,-22,-23,-33,-26,-24,-29,-20,-35,-36,-37,-38,13,-6,-7,-9,13,-4,-34,-27,-28,-25,-21,-23,13,-8,13,-30,-10,13,13,13,13,-5,-40,-39,]),'IF':([0,2,3,4,5,6,7,8,9,10,11,12,16,17,21,22,23,24,36,38,42,43,44,45,46,47,48,49,51,52,54,56,58,60,61,62,63,64,65,66,68,70,73,74,75,76,78,79,80,81,82,],[14,14,-2,-11,-12,-13,-14,-15,-16,-17,-18,-19,-20,-32,-3,-21,-22,-23,-33,-26,-24,-29,-20,-35,-36,-37,-38,14,-6,-7,-9,14,-4,-34,-27,-28,-25,-21,-23,14,-8,14,-30,-10,14,14,14,14,-5,-40,-39,]),'FOR':([0,2,3,4,5,6,7,8,9,10,11,12,16,17,21,22,23,24,36,38,42,43,44,45,46,47,48,49,51,52,54,56,58,60,61,62,63,64,65,66,68,70,73,74,75,76,78,79,80,81,82,],[15,15,-2,-11,-12,-13,-14,-15,-16,-17,-18,-19,-20,-32,-3,-21,-22,-23,-33,-26,-24,-29,-20,-35,-36,-37,-38,15,-6,-7,-9,15,-4,-34,-27,-28,-25,-21,-23,15,-8,15,-30,-10,15,15,15,15,-5,-40,-39,]),'ID':([0,2,3,4,5,6,7,8,9,10,11,12,15,16,17,18,20,21,22,23,24,25,26,32,35,36,38,39,40,41,42,43,44,45,46,47,48,49,51,52,53,54,55,56,57,58,60,61,62,63,64,65,66,68,70,71,73,74,75,76,78,79,80,81,82,],[16,16,-2,-11,-12,-13,22,-15,-16,-17,-18,-19,34,-20,-32,36,38,-3,-21,-22,-23,42,44,54,54,-33,-26,61,62,63,-24,64,-20,-35,-36,-37,-38,16,-6,-7,54,-9,54,16,44,-4,-34,-27,-28,-25,-21,-23,16,-8,16,64,-30,-10,16,16,16,16,-5,-40,-39,]),'HASHTAG':([0,2,3,4,5,6,7,8,9,10,11,12,16,17,21,22,23,24,36,38,42,43,44,45,46,47,48,49,51,52,54,56,58,60,61,62,63,64,65,66,68,70,73,74,75,76,78,79,80,81,82,],[20,20,-2,-11,-12,-13,-14,-15,-16,-17,-18,-19,-20,-32,-3,-21,-22,-23,-33,-26,-24,-29,-20,-35,-36,-37,-38,20,-6,-7,-9,20,-4,-34,-27,-28,-25,-21,-23,20,-8,20,-30,-10,20,20,20,20,-5,-40,-39,]),'NUMBER':([0,2,3,4,5,6,7,8,9,10,11,12,16,17,19,21,22,23,24,27,28,29,30,32,35,36,38,42,43,44,45,46,47,48,49,51,52,53,54,55,56,58,60,61,62,63,64,65,66,68,70,71,72,73,74,75,76,78,79,80,81,82,],[17,17,-2,-11,-12,-13,23,-15,-16,-17,-18,-19,-20,-32,17,-3,-21,-22,-23,17,17,17,17,51,51,-33,-26,-24,23,-20,-35,-36,-37,-38,17,-6,-7,51,-9,51,17,-4,-34,-27,-28,-25,-21,-23,17,-8,17,23,17,-30,-10,17,17,17,17,-5,-40,-39,]),'DOLLAR':([0,2,3,4,5,6,7,8,9,10,11,12,16,17,19,21,22,23,24,27,28,29,30,35,36,38,42,43,44,45,46,47,48,49,51,52,54,56,58,60,61,62,63,64,65,66,68,70,72,73,74,75,76,78,79,80,81,82,],[18,18,-2,-11,-12,-13,-14,-15,-16,-17,-18,-19,-20,-32,18,-3,-21,-22,-23,18,18,18,18,59,-33,-26,-24,-29,-20,-35,-36,-37,-38,18,-6,-7,-9,18,-4,-34,-27,-28,-25,-21,-23,18,-8,18,18,-30,-10,18,18,18,18,-5,-40,-39,]),'LPAREN':([0,2,3,4,5,6,7,8,9,10,11,12,16,17,19,21,22,23,24,27,28,29,30,32,35,36,38,42,43,44,45,46,47,48,49,51,52,53,54,55,56,58,59,60,61,62,63,64,65,66,68,70,72,73,74,75,76,78,79,80,81,82,],[19,19,-2,-11,-12,-13,-14,-15,-16,-17,-18,-19,-20,-32,19,-3,-21,-22,-23,19,19,19,19,55,55,-33,-26,-24,-29,-20,-35,-36,-37,-38,19,-6,-7,55,-9,55,19,-4,72,-34,-27,-28,-25,-21,-23,19,-8,19,19,-30,-10,19,19,19,19,-5,-40,-39,]),'$end':([1,2,3,4,5,6,7,8,9,10,11,12,16,17,21,22,23,24,36,38,42,43,44,45,46,47,48,51,52,54,58,60,61,62,63,64,65,68,73,74,80,81,82,],[0,-1,-2,-11,-12,-13,-14,-15,-16,-17,-18,-19,-20,-32,-3,-21,-22,-23,-33,-26,-24,-29,-20,-35,-36,-37,-38,-6,-7,-9,-4,-34,-27,-28,-25,-21,-23,-8,-30,-10,-5,-40,-39,]),'DONE':([3,4,5,6,7,8,9,10,11,12,16,17,21,22,23,24,36,38,42,43,44,45,46,47,48,51,52,54,58,60,61,62,63,64,65,66,68,73,74,79,80,81,82,],[-2,-11,-12,-13,-14,-15,-16,-17,-18,-19,-20,-32,-3,-21,-22,-23,-33,-26,-24,-29,-20,-35,-36,-37,-38,-6,-7,-9,-4,-34,-27,-28,-25,-21,-23,73,-8,-30,-10,82,-5,-40,-39,]),'ELSE':([3,4,5,6,7,8,9,10,11,12,16,17,21,22,23,24,36,38,42,43,44,45,46,47,48,51,52,54,58,60,61,62,63,64,65,68,70,73,74,80,81,82,],[-2,-11,-12,-13,-14,-15,-16,-17,-18,-19,-20,-32,-3,-21,-22,-23,-33,-26,-24,-29,-20,-35,-36,-37,-38,-6,-7,-9,-4,-34,-27,-28,-25,-21,-23,-8,75,-30,-10,-5,-40,-39,]),'FI':([3,4,5,6,7,8,9,10,11,12,16,17,21,22,23,24,36,38,42,43,44,45,46,47,48,51,52,54,58,60,61,62,63,64,65,68,73,74,78,80,81,82,],[-2,-11,-12,-13,-14,-15,-16,-17,-18,-19,-20,-32,-3,-21,-22,-23,-33,-26,-24,-29,-20,-35,-36,-37,-38,-6,-7,-9,-4,-34,-27,-28,-25,-21,-23,-8,-30,-10,81,-5,-40,-39,]),'STRING':([7,16,22,23,24,32,35,42,43,44,53,55,63,64,65,71,],[24,-20,-21,-22,-23,52,52,-24,65,-20,52,52,-25,-21,-23,65,]),'MINUS':([7,10,16,17,22,23,24,25,32,35,36,37,42,43,44,45,46,47,48,53,55,60,63,64,65,71,77,],[25,28,-20,-32,-21,-22,-23,41,53,53,-33,28,-24,25,-20,28,28,28,28,53,53,-34,-25,-21,-23,25,28,]),'PIPE':([7,16,22,23,24,42,63,],[26,-20,-21,-22,-23,-24,-25,]),'PLUS':([10,17,36,37,45,46,47,48,60,77,],[27,-32,-33,27,27,27,27,27,-34,27,]),'TIMES':([10,17,36,37,45,46,47,48,60,77,],[29,-32,-33,29,29,29,29,29,-34,29,]),'DIVIDE':([10,17,36,37,45,46,47,48,60,77,],[30,-32,-33,30,30,30,30,30,-34,30,]),'LEFT_BRACKET':([13,14,],[32,32,]),'EQUALS':([16,],[35,]),'RPAREN':([17,36,37,45,46,47,48,51,52,54,60,68,69,74,77,],[-32,-33,60,-35,-36,-37,-38,-6,-7,-9,-34,-8,74,-10,80,]),'INSERTION':([22,24,],[39,40,]),'DO':([23,31,42,44,63,64,65,67,71,],[-22,49,-24,-20,-25,-21,-23,-31,76,]),'THEN':([33,67,],[56,-31,]),'IN':([34,],[57,]),'RIGHT_BRACKET':([50,51,52,54,68,74,],[67,-6,-7,-9,-8,-10,]),}
 
 _lr_action = {}
 for _k, _v in _lr_action_items.items():
@@ -17,7 +17,7 @@ for _k, _v in _lr_action_items.items():
       _lr_action[_x][_k] = _y
 del _lr_action_items
 
-_lr_goto_items = {'expression':([0,5,],[1,10,]),'term':([0,5,6,7,],[2,2,11,12,]),'factor':([0,5,6,7,8,9,],[3,3,3,3,13,14,]),}
+_lr_goto_items = {'program':([0,],[1,]),'statements':([0,49,56,75,76,],[2,66,70,78,79,]),'statement':([0,2,49,56,66,70,75,76,78,79,],[3,21,3,3,21,21,3,3,21,21,]),'while_statement':([0,2,49,56,66,70,75,76,78,79,],[4,4,4,4,4,4,4,4,4,4,]),'if_statement':([0,2,49,56,66,70,75,76,78,79,],[5,5,5,5,5,5,5,5,5,5,]),'for_statement':([0,2,49,56,66,70,75,76,78,79,],[6,6,6,6,6,6,6,6,6,6,]),'command':([0,2,26,49,56,57,66,70,75,76,78,79,],[7,7,43,7,7,71,7,7,7,7,7,7,]),'assignment':([0,2,49,56,66,70,75,76,78,79,],[8,8,8,8,8,8,8,8,8,8,]),'comment':([0,2,49,56,66,70,75,76,78,79,],[9,9,9,9,9,9,9,9,9,9,]),'arithmetic_expression':([0,2,19,27,28,29,30,49,56,66,70,72,75,76,78,79,],[10,10,37,45,46,47,48,10,10,10,10,77,10,10,10,10,]),'insertion':([0,2,49,56,66,70,75,76,78,79,],[11,11,11,11,11,11,11,11,11,11,]),'pipe_command':([0,2,49,56,66,70,75,76,78,79,],[12,12,12,12,12,12,12,12,12,12,]),'condition':([13,14,],[31,33,]),'expression':([32,35,53,55,],[50,58,68,69,]),}
 
 _lr_goto = {}
 for _k, _v in _lr_goto_items.items():
@@ -26,13 +26,45 @@ for _k, _v in _lr_goto_items.items():
        _lr_goto[_x][_k] = _y
 del _lr_goto_items
 _lr_productions = [
-  ("S' -> expression","S'",1,None,None,None),
-  ('expression -> expression PLUS term','expression',3,'p_expression','yaccFile.py',8),
-  ('expression -> expression MINUS term','expression',3,'p_expression','yaccFile.py',9),
-  ('expression -> term','expression',1,'p_expression_term','yaccFile.py',21),
-  ('term -> term TIMES factor','term',3,'p_term_times','yaccFile.py',26),
-  ('term -> term DIVIDE factor','term',3,'p_term_div','yaccFile.py',31),
-  ('term -> factor','term',1,'p_term_factor','yaccFile.py',36),
-  ('factor -> NUMBER','factor',1,'p_factor_num','yaccFile.py',41),
-  ('factor -> LPAREN expression RPAREN','factor',3,'p_factor_expr','yaccFile.py',46),
+  ("S' -> program","S'",1,None,None,None),
+  ('program -> statements','program',1,'p_program','yaccFile.py',12),
+  ('statements -> statement','statements',1,'p_statements','yaccFile.py',17),
+  ('statements -> statements statement','statements',2,'p_statements','yaccFile.py',18),
+  ('assignment -> ID EQUALS expression','assignment',3,'p_assignment','yaccFile.py',26),
+  ('assignment -> ID EQUALS DOLLAR LPAREN arithmetic_expression RPAREN','assignment',6,'p_assignment','yaccFile.py',27),
+  ('expression -> NUMBER','expression',1,'p_expression','yaccFile.py',36),
+  ('expression -> STRING','expression',1,'p_expression','yaccFile.py',37),
+  ('expression -> MINUS expression','expression',2,'p_expression','yaccFile.py',38),
+  ('expression -> ID','expression',1,'p_expression','yaccFile.py',39),
+  ('expression -> LPAREN expression RPAREN','expression',3,'p_expression','yaccFile.py',40),
+  ('statement -> while_statement','statement',1,'p_statement','yaccFile.py',47),
+  ('statement -> if_statement','statement',1,'p_statement','yaccFile.py',48),
+  ('statement -> for_statement','statement',1,'p_statement','yaccFile.py',49),
+  ('statement -> command','statement',1,'p_statement','yaccFile.py',50),
+  ('statement -> assignment','statement',1,'p_statement','yaccFile.py',51),
+  ('statement -> comment','statement',1,'p_statement','yaccFile.py',52),
+  ('statement -> arithmetic_expression','statement',1,'p_statement','yaccFile.py',53),
+  ('statement -> insertion','statement',1,'p_statement','yaccFile.py',54),
+  ('statement -> pipe_command','statement',1,'p_statement','yaccFile.py',55),
+  ('command -> ID','command',1,'p_command','yaccFile.py',59),
+  ('command -> command ID','command',2,'p_command','yaccFile.py',60),
+  ('command -> command NUMBER','command',2,'p_command','yaccFile.py',61),
+  ('command -> command STRING','command',2,'p_command','yaccFile.py',62),
+  ('command -> command MINUS ID','command',3,'p_command','yaccFile.py',63),
+  ('command -> command MINUS MINUS ID','command',4,'p_command','yaccFile.py',64),
+  ('comment -> HASHTAG ID','comment',2,'p_comment','yaccFile.py',83),
+  ('insertion -> command ID INSERTION ID','insertion',4,'p_insertion','yaccFile.py',87),
+  ('insertion -> command STRING INSERTION ID','insertion',4,'p_insertion','yaccFile.py',88),
+  ('pipe_command -> command PIPE command','pipe_command',3,'p_pipe_command','yaccFile.py',92),
+  ('while_statement -> WHILE condition DO statements DONE','while_statement',5,'p_while_statement','yaccFile.py',96),
+  ('condition -> LEFT_BRACKET expression RIGHT_BRACKET','condition',3,'p_condition','yaccFile.py',100),
+  ('arithmetic_expression -> NUMBER','arithmetic_expression',1,'p_arithmetic_expression','yaccFile.py',105),
+  ('arithmetic_expression -> DOLLAR ID','arithmetic_expression',2,'p_arithmetic_expression','yaccFile.py',106),
+  ('arithmetic_expression -> LPAREN arithmetic_expression RPAREN','arithmetic_expression',3,'p_arithmetic_expression','yaccFile.py',107),
+  ('arithmetic_expression -> arithmetic_expression PLUS arithmetic_expression','arithmetic_expression',3,'p_arithmetic_expression','yaccFile.py',108),
+  ('arithmetic_expression -> arithmetic_expression MINUS arithmetic_expression','arithmetic_expression',3,'p_arithmetic_expression','yaccFile.py',109),
+  ('arithmetic_expression -> arithmetic_expression TIMES arithmetic_expression','arithmetic_expression',3,'p_arithmetic_expression','yaccFile.py',110),
+  ('arithmetic_expression -> arithmetic_expression DIVIDE arithmetic_expression','arithmetic_expression',3,'p_arithmetic_expression','yaccFile.py',111),
+  ('for_statement -> FOR ID IN command DO statements DONE','for_statement',7,'p_for_statement','yaccFile.py',120),
+  ('if_statement -> IF condition THEN statements ELSE statements FI','if_statement',7,'p_if_statement','yaccFile.py',125),
 ]

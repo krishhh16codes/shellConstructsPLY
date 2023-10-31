@@ -6,39 +6,60 @@ Unused terminals:
     CLEFT_BRACKET
     COPROC
     CRIGHT_BRACKET
-    DO
-    DONE
     ELIF
-    ELSE
     ESAC
     EXCLAMATION_MARK
-    FI
-    FOR
     FUNCTION
-    ID
-    IF
-    IN
     LEFT_BRACE
-    LEFT_BRACKET
     RIGHT_BRACE
-    RIGHT_BRACKET
     SELECT
-    THEN
+    SPACE
     TIME
     UNTIL
-    WHILE
 
 Grammar
 
-Rule 0     S' -> expression
-Rule 1     expression -> expression PLUS term
-Rule 2     expression -> expression MINUS term
-Rule 3     expression -> term
-Rule 4     term -> term TIMES factor
-Rule 5     term -> term DIVIDE factor
-Rule 6     term -> factor
-Rule 7     factor -> NUMBER
-Rule 8     factor -> LPAREN expression RPAREN
+Rule 0     S' -> program
+Rule 1     program -> statements
+Rule 2     statements -> statement
+Rule 3     statements -> statements statement
+Rule 4     assignment -> ID EQUALS expression
+Rule 5     assignment -> ID EQUALS DOLLAR LPAREN arithmetic_expression RPAREN
+Rule 6     expression -> NUMBER
+Rule 7     expression -> STRING
+Rule 8     expression -> MINUS expression
+Rule 9     expression -> ID
+Rule 10    expression -> LPAREN expression RPAREN
+Rule 11    statement -> while_statement
+Rule 12    statement -> if_statement
+Rule 13    statement -> for_statement
+Rule 14    statement -> command
+Rule 15    statement -> assignment
+Rule 16    statement -> comment
+Rule 17    statement -> arithmetic_expression
+Rule 18    statement -> insertion
+Rule 19    statement -> pipe_command
+Rule 20    command -> ID
+Rule 21    command -> command ID
+Rule 22    command -> command NUMBER
+Rule 23    command -> command STRING
+Rule 24    command -> command MINUS ID
+Rule 25    command -> command MINUS MINUS ID
+Rule 26    comment -> HASHTAG ID
+Rule 27    insertion -> command ID INSERTION ID
+Rule 28    insertion -> command STRING INSERTION ID
+Rule 29    pipe_command -> command PIPE command
+Rule 30    while_statement -> WHILE condition DO statements DONE
+Rule 31    condition -> LEFT_BRACKET expression RIGHT_BRACKET
+Rule 32    arithmetic_expression -> NUMBER
+Rule 33    arithmetic_expression -> DOLLAR ID
+Rule 34    arithmetic_expression -> LPAREN arithmetic_expression RPAREN
+Rule 35    arithmetic_expression -> arithmetic_expression PLUS arithmetic_expression
+Rule 36    arithmetic_expression -> arithmetic_expression MINUS arithmetic_expression
+Rule 37    arithmetic_expression -> arithmetic_expression TIMES arithmetic_expression
+Rule 38    arithmetic_expression -> arithmetic_expression DIVIDE arithmetic_expression
+Rule 39    for_statement -> FOR ID IN command DO statements DONE
+Rule 40    if_statement -> IF condition THEN statements ELSE statements FI
 
 Terminals, with rules where they appear
 
@@ -46,253 +67,1937 @@ CASE                 :
 CLEFT_BRACKET        : 
 COPROC               : 
 CRIGHT_BRACKET       : 
-DIVIDE               : 5
-DO                   : 
-DONE                 : 
+DIVIDE               : 38
+DO                   : 30 39
+DOLLAR               : 5 33
+DONE                 : 30 39
 ELIF                 : 
-ELSE                 : 
+ELSE                 : 40
+EQUALS               : 4 5
 ESAC                 : 
 EXCLAMATION_MARK     : 
-FI                   : 
-FOR                  : 
+FI                   : 40
+FOR                  : 39
 FUNCTION             : 
-ID                   : 
-IF                   : 
-IN                   : 
+HASHTAG              : 26
+ID                   : 4 5 9 20 21 24 25 26 27 27 28 33 39
+IF                   : 40
+IN                   : 39
+INSERTION            : 27 28
 LEFT_BRACE           : 
-LEFT_BRACKET         : 
-LPAREN               : 8
-MINUS                : 2
-NUMBER               : 7
-PLUS                 : 1
+LEFT_BRACKET         : 31
+LPAREN               : 5 10 34
+MINUS                : 8 24 25 25 36
+NUMBER               : 6 22 32
+PIPE                 : 29
+PLUS                 : 35
 RIGHT_BRACE          : 
-RIGHT_BRACKET        : 
-RPAREN               : 8
+RIGHT_BRACKET        : 31
+RPAREN               : 5 10 34
 SELECT               : 
-THEN                 : 
+SPACE                : 
+STRING               : 7 23 28
+THEN                 : 40
 TIME                 : 
-TIMES                : 4
+TIMES                : 37
 UNTIL                : 
-WHILE                : 
+WHILE                : 30
 error                : 
 
 Nonterminals, with rules where they appear
 
-expression           : 1 2 8 0
-factor               : 4 5 6
-term                 : 1 2 3 4 5
+arithmetic_expression : 5 17 34 35 35 36 36 37 37 38 38
+assignment           : 15
+command              : 14 21 22 23 24 25 27 28 29 29 39
+comment              : 16
+condition            : 30 40
+expression           : 4 8 10 31
+for_statement        : 13
+if_statement         : 12
+insertion            : 18
+pipe_command         : 19
+program              : 0
+statement            : 2 3
+statements           : 1 3 30 39 40 40
+while_statement      : 11
 
 Parsing method: LALR
 
 state 0
 
-    (0) S' -> . expression
-    (1) expression -> . expression PLUS term
-    (2) expression -> . expression MINUS term
-    (3) expression -> . term
-    (4) term -> . term TIMES factor
-    (5) term -> . term DIVIDE factor
-    (6) term -> . factor
-    (7) factor -> . NUMBER
-    (8) factor -> . LPAREN expression RPAREN
+    (0) S' -> . program
+    (1) program -> . statements
+    (2) statements -> . statement
+    (3) statements -> . statements statement
+    (11) statement -> . while_statement
+    (12) statement -> . if_statement
+    (13) statement -> . for_statement
+    (14) statement -> . command
+    (15) statement -> . assignment
+    (16) statement -> . comment
+    (17) statement -> . arithmetic_expression
+    (18) statement -> . insertion
+    (19) statement -> . pipe_command
+    (30) while_statement -> . WHILE condition DO statements DONE
+    (40) if_statement -> . IF condition THEN statements ELSE statements FI
+    (39) for_statement -> . FOR ID IN command DO statements DONE
+    (20) command -> . ID
+    (21) command -> . command ID
+    (22) command -> . command NUMBER
+    (23) command -> . command STRING
+    (24) command -> . command MINUS ID
+    (25) command -> . command MINUS MINUS ID
+    (4) assignment -> . ID EQUALS expression
+    (5) assignment -> . ID EQUALS DOLLAR LPAREN arithmetic_expression RPAREN
+    (26) comment -> . HASHTAG ID
+    (32) arithmetic_expression -> . NUMBER
+    (33) arithmetic_expression -> . DOLLAR ID
+    (34) arithmetic_expression -> . LPAREN arithmetic_expression RPAREN
+    (35) arithmetic_expression -> . arithmetic_expression PLUS arithmetic_expression
+    (36) arithmetic_expression -> . arithmetic_expression MINUS arithmetic_expression
+    (37) arithmetic_expression -> . arithmetic_expression TIMES arithmetic_expression
+    (38) arithmetic_expression -> . arithmetic_expression DIVIDE arithmetic_expression
+    (27) insertion -> . command ID INSERTION ID
+    (28) insertion -> . command STRING INSERTION ID
+    (29) pipe_command -> . command PIPE command
 
-    NUMBER          shift and go to state 4
-    LPAREN          shift and go to state 5
+    WHILE           shift and go to state 13
+    IF              shift and go to state 14
+    FOR             shift and go to state 15
+    ID              shift and go to state 16
+    HASHTAG         shift and go to state 20
+    NUMBER          shift and go to state 17
+    DOLLAR          shift and go to state 18
+    LPAREN          shift and go to state 19
 
-    expression                     shift and go to state 1
-    term                           shift and go to state 2
-    factor                         shift and go to state 3
+    program                        shift and go to state 1
+    statements                     shift and go to state 2
+    statement                      shift and go to state 3
+    while_statement                shift and go to state 4
+    if_statement                   shift and go to state 5
+    for_statement                  shift and go to state 6
+    command                        shift and go to state 7
+    assignment                     shift and go to state 8
+    comment                        shift and go to state 9
+    arithmetic_expression          shift and go to state 10
+    insertion                      shift and go to state 11
+    pipe_command                   shift and go to state 12
 
 state 1
 
-    (0) S' -> expression .
-    (1) expression -> expression . PLUS term
-    (2) expression -> expression . MINUS term
+    (0) S' -> program .
 
-    PLUS            shift and go to state 6
-    MINUS           shift and go to state 7
 
 
 state 2
 
-    (3) expression -> term .
-    (4) term -> term . TIMES factor
-    (5) term -> term . DIVIDE factor
+    (1) program -> statements .
+    (3) statements -> statements . statement
+    (11) statement -> . while_statement
+    (12) statement -> . if_statement
+    (13) statement -> . for_statement
+    (14) statement -> . command
+    (15) statement -> . assignment
+    (16) statement -> . comment
+    (17) statement -> . arithmetic_expression
+    (18) statement -> . insertion
+    (19) statement -> . pipe_command
+    (30) while_statement -> . WHILE condition DO statements DONE
+    (40) if_statement -> . IF condition THEN statements ELSE statements FI
+    (39) for_statement -> . FOR ID IN command DO statements DONE
+    (20) command -> . ID
+    (21) command -> . command ID
+    (22) command -> . command NUMBER
+    (23) command -> . command STRING
+    (24) command -> . command MINUS ID
+    (25) command -> . command MINUS MINUS ID
+    (4) assignment -> . ID EQUALS expression
+    (5) assignment -> . ID EQUALS DOLLAR LPAREN arithmetic_expression RPAREN
+    (26) comment -> . HASHTAG ID
+    (32) arithmetic_expression -> . NUMBER
+    (33) arithmetic_expression -> . DOLLAR ID
+    (34) arithmetic_expression -> . LPAREN arithmetic_expression RPAREN
+    (35) arithmetic_expression -> . arithmetic_expression PLUS arithmetic_expression
+    (36) arithmetic_expression -> . arithmetic_expression MINUS arithmetic_expression
+    (37) arithmetic_expression -> . arithmetic_expression TIMES arithmetic_expression
+    (38) arithmetic_expression -> . arithmetic_expression DIVIDE arithmetic_expression
+    (27) insertion -> . command ID INSERTION ID
+    (28) insertion -> . command STRING INSERTION ID
+    (29) pipe_command -> . command PIPE command
 
-    PLUS            reduce using rule 3 (expression -> term .)
-    MINUS           reduce using rule 3 (expression -> term .)
-    $end            reduce using rule 3 (expression -> term .)
-    RPAREN          reduce using rule 3 (expression -> term .)
-    TIMES           shift and go to state 8
-    DIVIDE          shift and go to state 9
+    $end            reduce using rule 1 (program -> statements .)
+    WHILE           shift and go to state 13
+    IF              shift and go to state 14
+    FOR             shift and go to state 15
+    ID              shift and go to state 16
+    HASHTAG         shift and go to state 20
+    NUMBER          shift and go to state 17
+    DOLLAR          shift and go to state 18
+    LPAREN          shift and go to state 19
 
+    statement                      shift and go to state 21
+    while_statement                shift and go to state 4
+    if_statement                   shift and go to state 5
+    for_statement                  shift and go to state 6
+    command                        shift and go to state 7
+    assignment                     shift and go to state 8
+    comment                        shift and go to state 9
+    arithmetic_expression          shift and go to state 10
+    insertion                      shift and go to state 11
+    pipe_command                   shift and go to state 12
 
 state 3
 
-    (6) term -> factor .
+    (2) statements -> statement .
 
-    TIMES           reduce using rule 6 (term -> factor .)
-    DIVIDE          reduce using rule 6 (term -> factor .)
-    PLUS            reduce using rule 6 (term -> factor .)
-    MINUS           reduce using rule 6 (term -> factor .)
-    $end            reduce using rule 6 (term -> factor .)
-    RPAREN          reduce using rule 6 (term -> factor .)
+    WHILE           reduce using rule 2 (statements -> statement .)
+    IF              reduce using rule 2 (statements -> statement .)
+    FOR             reduce using rule 2 (statements -> statement .)
+    ID              reduce using rule 2 (statements -> statement .)
+    HASHTAG         reduce using rule 2 (statements -> statement .)
+    NUMBER          reduce using rule 2 (statements -> statement .)
+    DOLLAR          reduce using rule 2 (statements -> statement .)
+    LPAREN          reduce using rule 2 (statements -> statement .)
+    $end            reduce using rule 2 (statements -> statement .)
+    DONE            reduce using rule 2 (statements -> statement .)
+    ELSE            reduce using rule 2 (statements -> statement .)
+    FI              reduce using rule 2 (statements -> statement .)
 
 
 state 4
 
-    (7) factor -> NUMBER .
+    (11) statement -> while_statement .
 
-    TIMES           reduce using rule 7 (factor -> NUMBER .)
-    DIVIDE          reduce using rule 7 (factor -> NUMBER .)
-    PLUS            reduce using rule 7 (factor -> NUMBER .)
-    MINUS           reduce using rule 7 (factor -> NUMBER .)
-    $end            reduce using rule 7 (factor -> NUMBER .)
-    RPAREN          reduce using rule 7 (factor -> NUMBER .)
+    WHILE           reduce using rule 11 (statement -> while_statement .)
+    IF              reduce using rule 11 (statement -> while_statement .)
+    FOR             reduce using rule 11 (statement -> while_statement .)
+    ID              reduce using rule 11 (statement -> while_statement .)
+    HASHTAG         reduce using rule 11 (statement -> while_statement .)
+    NUMBER          reduce using rule 11 (statement -> while_statement .)
+    DOLLAR          reduce using rule 11 (statement -> while_statement .)
+    LPAREN          reduce using rule 11 (statement -> while_statement .)
+    $end            reduce using rule 11 (statement -> while_statement .)
+    DONE            reduce using rule 11 (statement -> while_statement .)
+    ELSE            reduce using rule 11 (statement -> while_statement .)
+    FI              reduce using rule 11 (statement -> while_statement .)
 
 
 state 5
 
-    (8) factor -> LPAREN . expression RPAREN
-    (1) expression -> . expression PLUS term
-    (2) expression -> . expression MINUS term
-    (3) expression -> . term
-    (4) term -> . term TIMES factor
-    (5) term -> . term DIVIDE factor
-    (6) term -> . factor
-    (7) factor -> . NUMBER
-    (8) factor -> . LPAREN expression RPAREN
+    (12) statement -> if_statement .
 
-    NUMBER          shift and go to state 4
-    LPAREN          shift and go to state 5
+    WHILE           reduce using rule 12 (statement -> if_statement .)
+    IF              reduce using rule 12 (statement -> if_statement .)
+    FOR             reduce using rule 12 (statement -> if_statement .)
+    ID              reduce using rule 12 (statement -> if_statement .)
+    HASHTAG         reduce using rule 12 (statement -> if_statement .)
+    NUMBER          reduce using rule 12 (statement -> if_statement .)
+    DOLLAR          reduce using rule 12 (statement -> if_statement .)
+    LPAREN          reduce using rule 12 (statement -> if_statement .)
+    $end            reduce using rule 12 (statement -> if_statement .)
+    DONE            reduce using rule 12 (statement -> if_statement .)
+    ELSE            reduce using rule 12 (statement -> if_statement .)
+    FI              reduce using rule 12 (statement -> if_statement .)
 
-    expression                     shift and go to state 10
-    term                           shift and go to state 2
-    factor                         shift and go to state 3
 
 state 6
 
-    (1) expression -> expression PLUS . term
-    (4) term -> . term TIMES factor
-    (5) term -> . term DIVIDE factor
-    (6) term -> . factor
-    (7) factor -> . NUMBER
-    (8) factor -> . LPAREN expression RPAREN
+    (13) statement -> for_statement .
 
-    NUMBER          shift and go to state 4
-    LPAREN          shift and go to state 5
+    WHILE           reduce using rule 13 (statement -> for_statement .)
+    IF              reduce using rule 13 (statement -> for_statement .)
+    FOR             reduce using rule 13 (statement -> for_statement .)
+    ID              reduce using rule 13 (statement -> for_statement .)
+    HASHTAG         reduce using rule 13 (statement -> for_statement .)
+    NUMBER          reduce using rule 13 (statement -> for_statement .)
+    DOLLAR          reduce using rule 13 (statement -> for_statement .)
+    LPAREN          reduce using rule 13 (statement -> for_statement .)
+    $end            reduce using rule 13 (statement -> for_statement .)
+    DONE            reduce using rule 13 (statement -> for_statement .)
+    ELSE            reduce using rule 13 (statement -> for_statement .)
+    FI              reduce using rule 13 (statement -> for_statement .)
 
-    term                           shift and go to state 11
-    factor                         shift and go to state 3
 
 state 7
 
-    (2) expression -> expression MINUS . term
-    (4) term -> . term TIMES factor
-    (5) term -> . term DIVIDE factor
-    (6) term -> . factor
-    (7) factor -> . NUMBER
-    (8) factor -> . LPAREN expression RPAREN
+    (14) statement -> command .
+    (21) command -> command . ID
+    (22) command -> command . NUMBER
+    (23) command -> command . STRING
+    (24) command -> command . MINUS ID
+    (25) command -> command . MINUS MINUS ID
+    (27) insertion -> command . ID INSERTION ID
+    (28) insertion -> command . STRING INSERTION ID
+    (29) pipe_command -> command . PIPE command
 
-    NUMBER          shift and go to state 4
-    LPAREN          shift and go to state 5
+  ! shift/reduce conflict for ID resolved as shift
+  ! shift/reduce conflict for NUMBER resolved as shift
+    WHILE           reduce using rule 14 (statement -> command .)
+    IF              reduce using rule 14 (statement -> command .)
+    FOR             reduce using rule 14 (statement -> command .)
+    HASHTAG         reduce using rule 14 (statement -> command .)
+    DOLLAR          reduce using rule 14 (statement -> command .)
+    LPAREN          reduce using rule 14 (statement -> command .)
+    $end            reduce using rule 14 (statement -> command .)
+    DONE            reduce using rule 14 (statement -> command .)
+    ELSE            reduce using rule 14 (statement -> command .)
+    FI              reduce using rule 14 (statement -> command .)
+    ID              shift and go to state 22
+    NUMBER          shift and go to state 23
+    STRING          shift and go to state 24
+    MINUS           shift and go to state 25
+    PIPE            shift and go to state 26
 
-    term                           shift and go to state 12
-    factor                         shift and go to state 3
+  ! ID              [ reduce using rule 14 (statement -> command .) ]
+  ! NUMBER          [ reduce using rule 14 (statement -> command .) ]
+
 
 state 8
 
-    (4) term -> term TIMES . factor
-    (7) factor -> . NUMBER
-    (8) factor -> . LPAREN expression RPAREN
+    (15) statement -> assignment .
 
-    NUMBER          shift and go to state 4
-    LPAREN          shift and go to state 5
+    WHILE           reduce using rule 15 (statement -> assignment .)
+    IF              reduce using rule 15 (statement -> assignment .)
+    FOR             reduce using rule 15 (statement -> assignment .)
+    ID              reduce using rule 15 (statement -> assignment .)
+    HASHTAG         reduce using rule 15 (statement -> assignment .)
+    NUMBER          reduce using rule 15 (statement -> assignment .)
+    DOLLAR          reduce using rule 15 (statement -> assignment .)
+    LPAREN          reduce using rule 15 (statement -> assignment .)
+    $end            reduce using rule 15 (statement -> assignment .)
+    DONE            reduce using rule 15 (statement -> assignment .)
+    ELSE            reduce using rule 15 (statement -> assignment .)
+    FI              reduce using rule 15 (statement -> assignment .)
 
-    factor                         shift and go to state 13
 
 state 9
 
-    (5) term -> term DIVIDE . factor
-    (7) factor -> . NUMBER
-    (8) factor -> . LPAREN expression RPAREN
+    (16) statement -> comment .
 
-    NUMBER          shift and go to state 4
-    LPAREN          shift and go to state 5
+    WHILE           reduce using rule 16 (statement -> comment .)
+    IF              reduce using rule 16 (statement -> comment .)
+    FOR             reduce using rule 16 (statement -> comment .)
+    ID              reduce using rule 16 (statement -> comment .)
+    HASHTAG         reduce using rule 16 (statement -> comment .)
+    NUMBER          reduce using rule 16 (statement -> comment .)
+    DOLLAR          reduce using rule 16 (statement -> comment .)
+    LPAREN          reduce using rule 16 (statement -> comment .)
+    $end            reduce using rule 16 (statement -> comment .)
+    DONE            reduce using rule 16 (statement -> comment .)
+    ELSE            reduce using rule 16 (statement -> comment .)
+    FI              reduce using rule 16 (statement -> comment .)
 
-    factor                         shift and go to state 14
 
 state 10
 
-    (8) factor -> LPAREN expression . RPAREN
-    (1) expression -> expression . PLUS term
-    (2) expression -> expression . MINUS term
+    (17) statement -> arithmetic_expression .
+    (35) arithmetic_expression -> arithmetic_expression . PLUS arithmetic_expression
+    (36) arithmetic_expression -> arithmetic_expression . MINUS arithmetic_expression
+    (37) arithmetic_expression -> arithmetic_expression . TIMES arithmetic_expression
+    (38) arithmetic_expression -> arithmetic_expression . DIVIDE arithmetic_expression
 
-    RPAREN          shift and go to state 15
-    PLUS            shift and go to state 6
-    MINUS           shift and go to state 7
+    WHILE           reduce using rule 17 (statement -> arithmetic_expression .)
+    IF              reduce using rule 17 (statement -> arithmetic_expression .)
+    FOR             reduce using rule 17 (statement -> arithmetic_expression .)
+    ID              reduce using rule 17 (statement -> arithmetic_expression .)
+    HASHTAG         reduce using rule 17 (statement -> arithmetic_expression .)
+    NUMBER          reduce using rule 17 (statement -> arithmetic_expression .)
+    DOLLAR          reduce using rule 17 (statement -> arithmetic_expression .)
+    LPAREN          reduce using rule 17 (statement -> arithmetic_expression .)
+    $end            reduce using rule 17 (statement -> arithmetic_expression .)
+    DONE            reduce using rule 17 (statement -> arithmetic_expression .)
+    ELSE            reduce using rule 17 (statement -> arithmetic_expression .)
+    FI              reduce using rule 17 (statement -> arithmetic_expression .)
+    PLUS            shift and go to state 27
+    MINUS           shift and go to state 28
+    TIMES           shift and go to state 29
+    DIVIDE          shift and go to state 30
 
 
 state 11
 
-    (1) expression -> expression PLUS term .
-    (4) term -> term . TIMES factor
-    (5) term -> term . DIVIDE factor
+    (18) statement -> insertion .
 
-    PLUS            reduce using rule 1 (expression -> expression PLUS term .)
-    MINUS           reduce using rule 1 (expression -> expression PLUS term .)
-    $end            reduce using rule 1 (expression -> expression PLUS term .)
-    RPAREN          reduce using rule 1 (expression -> expression PLUS term .)
-    TIMES           shift and go to state 8
-    DIVIDE          shift and go to state 9
+    WHILE           reduce using rule 18 (statement -> insertion .)
+    IF              reduce using rule 18 (statement -> insertion .)
+    FOR             reduce using rule 18 (statement -> insertion .)
+    ID              reduce using rule 18 (statement -> insertion .)
+    HASHTAG         reduce using rule 18 (statement -> insertion .)
+    NUMBER          reduce using rule 18 (statement -> insertion .)
+    DOLLAR          reduce using rule 18 (statement -> insertion .)
+    LPAREN          reduce using rule 18 (statement -> insertion .)
+    $end            reduce using rule 18 (statement -> insertion .)
+    DONE            reduce using rule 18 (statement -> insertion .)
+    ELSE            reduce using rule 18 (statement -> insertion .)
+    FI              reduce using rule 18 (statement -> insertion .)
 
 
 state 12
 
-    (2) expression -> expression MINUS term .
-    (4) term -> term . TIMES factor
-    (5) term -> term . DIVIDE factor
+    (19) statement -> pipe_command .
 
-    PLUS            reduce using rule 2 (expression -> expression MINUS term .)
-    MINUS           reduce using rule 2 (expression -> expression MINUS term .)
-    $end            reduce using rule 2 (expression -> expression MINUS term .)
-    RPAREN          reduce using rule 2 (expression -> expression MINUS term .)
-    TIMES           shift and go to state 8
-    DIVIDE          shift and go to state 9
+    WHILE           reduce using rule 19 (statement -> pipe_command .)
+    IF              reduce using rule 19 (statement -> pipe_command .)
+    FOR             reduce using rule 19 (statement -> pipe_command .)
+    ID              reduce using rule 19 (statement -> pipe_command .)
+    HASHTAG         reduce using rule 19 (statement -> pipe_command .)
+    NUMBER          reduce using rule 19 (statement -> pipe_command .)
+    DOLLAR          reduce using rule 19 (statement -> pipe_command .)
+    LPAREN          reduce using rule 19 (statement -> pipe_command .)
+    $end            reduce using rule 19 (statement -> pipe_command .)
+    DONE            reduce using rule 19 (statement -> pipe_command .)
+    ELSE            reduce using rule 19 (statement -> pipe_command .)
+    FI              reduce using rule 19 (statement -> pipe_command .)
 
 
 state 13
 
-    (4) term -> term TIMES factor .
+    (30) while_statement -> WHILE . condition DO statements DONE
+    (31) condition -> . LEFT_BRACKET expression RIGHT_BRACKET
 
-    TIMES           reduce using rule 4 (term -> term TIMES factor .)
-    DIVIDE          reduce using rule 4 (term -> term TIMES factor .)
-    PLUS            reduce using rule 4 (term -> term TIMES factor .)
-    MINUS           reduce using rule 4 (term -> term TIMES factor .)
-    $end            reduce using rule 4 (term -> term TIMES factor .)
-    RPAREN          reduce using rule 4 (term -> term TIMES factor .)
+    LEFT_BRACKET    shift and go to state 32
 
+    condition                      shift and go to state 31
 
 state 14
 
-    (5) term -> term DIVIDE factor .
+    (40) if_statement -> IF . condition THEN statements ELSE statements FI
+    (31) condition -> . LEFT_BRACKET expression RIGHT_BRACKET
 
-    TIMES           reduce using rule 5 (term -> term DIVIDE factor .)
-    DIVIDE          reduce using rule 5 (term -> term DIVIDE factor .)
-    PLUS            reduce using rule 5 (term -> term DIVIDE factor .)
-    MINUS           reduce using rule 5 (term -> term DIVIDE factor .)
-    $end            reduce using rule 5 (term -> term DIVIDE factor .)
-    RPAREN          reduce using rule 5 (term -> term DIVIDE factor .)
+    LEFT_BRACKET    shift and go to state 32
 
+    condition                      shift and go to state 33
 
 state 15
 
-    (8) factor -> LPAREN expression RPAREN .
+    (39) for_statement -> FOR . ID IN command DO statements DONE
 
-    TIMES           reduce using rule 8 (factor -> LPAREN expression RPAREN .)
-    DIVIDE          reduce using rule 8 (factor -> LPAREN expression RPAREN .)
-    PLUS            reduce using rule 8 (factor -> LPAREN expression RPAREN .)
-    MINUS           reduce using rule 8 (factor -> LPAREN expression RPAREN .)
-    $end            reduce using rule 8 (factor -> LPAREN expression RPAREN .)
-    RPAREN          reduce using rule 8 (factor -> LPAREN expression RPAREN .)
+    ID              shift and go to state 34
 
+
+state 16
+
+    (20) command -> ID .
+    (4) assignment -> ID . EQUALS expression
+    (5) assignment -> ID . EQUALS DOLLAR LPAREN arithmetic_expression RPAREN
+
+    ID              reduce using rule 20 (command -> ID .)
+    NUMBER          reduce using rule 20 (command -> ID .)
+    STRING          reduce using rule 20 (command -> ID .)
+    MINUS           reduce using rule 20 (command -> ID .)
+    PIPE            reduce using rule 20 (command -> ID .)
+    WHILE           reduce using rule 20 (command -> ID .)
+    IF              reduce using rule 20 (command -> ID .)
+    FOR             reduce using rule 20 (command -> ID .)
+    HASHTAG         reduce using rule 20 (command -> ID .)
+    DOLLAR          reduce using rule 20 (command -> ID .)
+    LPAREN          reduce using rule 20 (command -> ID .)
+    $end            reduce using rule 20 (command -> ID .)
+    DONE            reduce using rule 20 (command -> ID .)
+    ELSE            reduce using rule 20 (command -> ID .)
+    FI              reduce using rule 20 (command -> ID .)
+    EQUALS          shift and go to state 35
+
+
+state 17
+
+    (32) arithmetic_expression -> NUMBER .
+
+    PLUS            reduce using rule 32 (arithmetic_expression -> NUMBER .)
+    MINUS           reduce using rule 32 (arithmetic_expression -> NUMBER .)
+    TIMES           reduce using rule 32 (arithmetic_expression -> NUMBER .)
+    DIVIDE          reduce using rule 32 (arithmetic_expression -> NUMBER .)
+    WHILE           reduce using rule 32 (arithmetic_expression -> NUMBER .)
+    IF              reduce using rule 32 (arithmetic_expression -> NUMBER .)
+    FOR             reduce using rule 32 (arithmetic_expression -> NUMBER .)
+    ID              reduce using rule 32 (arithmetic_expression -> NUMBER .)
+    HASHTAG         reduce using rule 32 (arithmetic_expression -> NUMBER .)
+    NUMBER          reduce using rule 32 (arithmetic_expression -> NUMBER .)
+    DOLLAR          reduce using rule 32 (arithmetic_expression -> NUMBER .)
+    LPAREN          reduce using rule 32 (arithmetic_expression -> NUMBER .)
+    $end            reduce using rule 32 (arithmetic_expression -> NUMBER .)
+    RPAREN          reduce using rule 32 (arithmetic_expression -> NUMBER .)
+    DONE            reduce using rule 32 (arithmetic_expression -> NUMBER .)
+    ELSE            reduce using rule 32 (arithmetic_expression -> NUMBER .)
+    FI              reduce using rule 32 (arithmetic_expression -> NUMBER .)
+
+
+state 18
+
+    (33) arithmetic_expression -> DOLLAR . ID
+
+    ID              shift and go to state 36
+
+
+state 19
+
+    (34) arithmetic_expression -> LPAREN . arithmetic_expression RPAREN
+    (32) arithmetic_expression -> . NUMBER
+    (33) arithmetic_expression -> . DOLLAR ID
+    (34) arithmetic_expression -> . LPAREN arithmetic_expression RPAREN
+    (35) arithmetic_expression -> . arithmetic_expression PLUS arithmetic_expression
+    (36) arithmetic_expression -> . arithmetic_expression MINUS arithmetic_expression
+    (37) arithmetic_expression -> . arithmetic_expression TIMES arithmetic_expression
+    (38) arithmetic_expression -> . arithmetic_expression DIVIDE arithmetic_expression
+
+    NUMBER          shift and go to state 17
+    DOLLAR          shift and go to state 18
+    LPAREN          shift and go to state 19
+
+    arithmetic_expression          shift and go to state 37
+
+state 20
+
+    (26) comment -> HASHTAG . ID
+
+    ID              shift and go to state 38
+
+
+state 21
+
+    (3) statements -> statements statement .
+
+    WHILE           reduce using rule 3 (statements -> statements statement .)
+    IF              reduce using rule 3 (statements -> statements statement .)
+    FOR             reduce using rule 3 (statements -> statements statement .)
+    ID              reduce using rule 3 (statements -> statements statement .)
+    HASHTAG         reduce using rule 3 (statements -> statements statement .)
+    NUMBER          reduce using rule 3 (statements -> statements statement .)
+    DOLLAR          reduce using rule 3 (statements -> statements statement .)
+    LPAREN          reduce using rule 3 (statements -> statements statement .)
+    $end            reduce using rule 3 (statements -> statements statement .)
+    DONE            reduce using rule 3 (statements -> statements statement .)
+    ELSE            reduce using rule 3 (statements -> statements statement .)
+    FI              reduce using rule 3 (statements -> statements statement .)
+
+
+state 22
+
+    (21) command -> command ID .
+    (27) insertion -> command ID . INSERTION ID
+
+    ID              reduce using rule 21 (command -> command ID .)
+    NUMBER          reduce using rule 21 (command -> command ID .)
+    STRING          reduce using rule 21 (command -> command ID .)
+    MINUS           reduce using rule 21 (command -> command ID .)
+    PIPE            reduce using rule 21 (command -> command ID .)
+    WHILE           reduce using rule 21 (command -> command ID .)
+    IF              reduce using rule 21 (command -> command ID .)
+    FOR             reduce using rule 21 (command -> command ID .)
+    HASHTAG         reduce using rule 21 (command -> command ID .)
+    DOLLAR          reduce using rule 21 (command -> command ID .)
+    LPAREN          reduce using rule 21 (command -> command ID .)
+    $end            reduce using rule 21 (command -> command ID .)
+    DONE            reduce using rule 21 (command -> command ID .)
+    ELSE            reduce using rule 21 (command -> command ID .)
+    FI              reduce using rule 21 (command -> command ID .)
+    INSERTION       shift and go to state 39
+
+
+state 23
+
+    (22) command -> command NUMBER .
+
+    ID              reduce using rule 22 (command -> command NUMBER .)
+    NUMBER          reduce using rule 22 (command -> command NUMBER .)
+    STRING          reduce using rule 22 (command -> command NUMBER .)
+    MINUS           reduce using rule 22 (command -> command NUMBER .)
+    PIPE            reduce using rule 22 (command -> command NUMBER .)
+    WHILE           reduce using rule 22 (command -> command NUMBER .)
+    IF              reduce using rule 22 (command -> command NUMBER .)
+    FOR             reduce using rule 22 (command -> command NUMBER .)
+    HASHTAG         reduce using rule 22 (command -> command NUMBER .)
+    DOLLAR          reduce using rule 22 (command -> command NUMBER .)
+    LPAREN          reduce using rule 22 (command -> command NUMBER .)
+    $end            reduce using rule 22 (command -> command NUMBER .)
+    DONE            reduce using rule 22 (command -> command NUMBER .)
+    ELSE            reduce using rule 22 (command -> command NUMBER .)
+    FI              reduce using rule 22 (command -> command NUMBER .)
+    DO              reduce using rule 22 (command -> command NUMBER .)
+
+
+state 24
+
+    (23) command -> command STRING .
+    (28) insertion -> command STRING . INSERTION ID
+
+    ID              reduce using rule 23 (command -> command STRING .)
+    NUMBER          reduce using rule 23 (command -> command STRING .)
+    STRING          reduce using rule 23 (command -> command STRING .)
+    MINUS           reduce using rule 23 (command -> command STRING .)
+    PIPE            reduce using rule 23 (command -> command STRING .)
+    WHILE           reduce using rule 23 (command -> command STRING .)
+    IF              reduce using rule 23 (command -> command STRING .)
+    FOR             reduce using rule 23 (command -> command STRING .)
+    HASHTAG         reduce using rule 23 (command -> command STRING .)
+    DOLLAR          reduce using rule 23 (command -> command STRING .)
+    LPAREN          reduce using rule 23 (command -> command STRING .)
+    $end            reduce using rule 23 (command -> command STRING .)
+    DONE            reduce using rule 23 (command -> command STRING .)
+    ELSE            reduce using rule 23 (command -> command STRING .)
+    FI              reduce using rule 23 (command -> command STRING .)
+    INSERTION       shift and go to state 40
+
+
+state 25
+
+    (24) command -> command MINUS . ID
+    (25) command -> command MINUS . MINUS ID
+
+    ID              shift and go to state 42
+    MINUS           shift and go to state 41
+
+
+state 26
+
+    (29) pipe_command -> command PIPE . command
+    (20) command -> . ID
+    (21) command -> . command ID
+    (22) command -> . command NUMBER
+    (23) command -> . command STRING
+    (24) command -> . command MINUS ID
+    (25) command -> . command MINUS MINUS ID
+
+    ID              shift and go to state 44
+
+    command                        shift and go to state 43
+
+state 27
+
+    (35) arithmetic_expression -> arithmetic_expression PLUS . arithmetic_expression
+    (32) arithmetic_expression -> . NUMBER
+    (33) arithmetic_expression -> . DOLLAR ID
+    (34) arithmetic_expression -> . LPAREN arithmetic_expression RPAREN
+    (35) arithmetic_expression -> . arithmetic_expression PLUS arithmetic_expression
+    (36) arithmetic_expression -> . arithmetic_expression MINUS arithmetic_expression
+    (37) arithmetic_expression -> . arithmetic_expression TIMES arithmetic_expression
+    (38) arithmetic_expression -> . arithmetic_expression DIVIDE arithmetic_expression
+
+    NUMBER          shift and go to state 17
+    DOLLAR          shift and go to state 18
+    LPAREN          shift and go to state 19
+
+    arithmetic_expression          shift and go to state 45
+
+state 28
+
+    (36) arithmetic_expression -> arithmetic_expression MINUS . arithmetic_expression
+    (32) arithmetic_expression -> . NUMBER
+    (33) arithmetic_expression -> . DOLLAR ID
+    (34) arithmetic_expression -> . LPAREN arithmetic_expression RPAREN
+    (35) arithmetic_expression -> . arithmetic_expression PLUS arithmetic_expression
+    (36) arithmetic_expression -> . arithmetic_expression MINUS arithmetic_expression
+    (37) arithmetic_expression -> . arithmetic_expression TIMES arithmetic_expression
+    (38) arithmetic_expression -> . arithmetic_expression DIVIDE arithmetic_expression
+
+    NUMBER          shift and go to state 17
+    DOLLAR          shift and go to state 18
+    LPAREN          shift and go to state 19
+
+    arithmetic_expression          shift and go to state 46
+
+state 29
+
+    (37) arithmetic_expression -> arithmetic_expression TIMES . arithmetic_expression
+    (32) arithmetic_expression -> . NUMBER
+    (33) arithmetic_expression -> . DOLLAR ID
+    (34) arithmetic_expression -> . LPAREN arithmetic_expression RPAREN
+    (35) arithmetic_expression -> . arithmetic_expression PLUS arithmetic_expression
+    (36) arithmetic_expression -> . arithmetic_expression MINUS arithmetic_expression
+    (37) arithmetic_expression -> . arithmetic_expression TIMES arithmetic_expression
+    (38) arithmetic_expression -> . arithmetic_expression DIVIDE arithmetic_expression
+
+    NUMBER          shift and go to state 17
+    DOLLAR          shift and go to state 18
+    LPAREN          shift and go to state 19
+
+    arithmetic_expression          shift and go to state 47
+
+state 30
+
+    (38) arithmetic_expression -> arithmetic_expression DIVIDE . arithmetic_expression
+    (32) arithmetic_expression -> . NUMBER
+    (33) arithmetic_expression -> . DOLLAR ID
+    (34) arithmetic_expression -> . LPAREN arithmetic_expression RPAREN
+    (35) arithmetic_expression -> . arithmetic_expression PLUS arithmetic_expression
+    (36) arithmetic_expression -> . arithmetic_expression MINUS arithmetic_expression
+    (37) arithmetic_expression -> . arithmetic_expression TIMES arithmetic_expression
+    (38) arithmetic_expression -> . arithmetic_expression DIVIDE arithmetic_expression
+
+    NUMBER          shift and go to state 17
+    DOLLAR          shift and go to state 18
+    LPAREN          shift and go to state 19
+
+    arithmetic_expression          shift and go to state 48
+
+state 31
+
+    (30) while_statement -> WHILE condition . DO statements DONE
+
+    DO              shift and go to state 49
+
+
+state 32
+
+    (31) condition -> LEFT_BRACKET . expression RIGHT_BRACKET
+    (6) expression -> . NUMBER
+    (7) expression -> . STRING
+    (8) expression -> . MINUS expression
+    (9) expression -> . ID
+    (10) expression -> . LPAREN expression RPAREN
+
+    NUMBER          shift and go to state 51
+    STRING          shift and go to state 52
+    MINUS           shift and go to state 53
+    ID              shift and go to state 54
+    LPAREN          shift and go to state 55
+
+    expression                     shift and go to state 50
+
+state 33
+
+    (40) if_statement -> IF condition . THEN statements ELSE statements FI
+
+    THEN            shift and go to state 56
+
+
+state 34
+
+    (39) for_statement -> FOR ID . IN command DO statements DONE
+
+    IN              shift and go to state 57
+
+
+state 35
+
+    (4) assignment -> ID EQUALS . expression
+    (5) assignment -> ID EQUALS . DOLLAR LPAREN arithmetic_expression RPAREN
+    (6) expression -> . NUMBER
+    (7) expression -> . STRING
+    (8) expression -> . MINUS expression
+    (9) expression -> . ID
+    (10) expression -> . LPAREN expression RPAREN
+
+    DOLLAR          shift and go to state 59
+    NUMBER          shift and go to state 51
+    STRING          shift and go to state 52
+    MINUS           shift and go to state 53
+    ID              shift and go to state 54
+    LPAREN          shift and go to state 55
+
+    expression                     shift and go to state 58
+
+state 36
+
+    (33) arithmetic_expression -> DOLLAR ID .
+
+    PLUS            reduce using rule 33 (arithmetic_expression -> DOLLAR ID .)
+    MINUS           reduce using rule 33 (arithmetic_expression -> DOLLAR ID .)
+    TIMES           reduce using rule 33 (arithmetic_expression -> DOLLAR ID .)
+    DIVIDE          reduce using rule 33 (arithmetic_expression -> DOLLAR ID .)
+    WHILE           reduce using rule 33 (arithmetic_expression -> DOLLAR ID .)
+    IF              reduce using rule 33 (arithmetic_expression -> DOLLAR ID .)
+    FOR             reduce using rule 33 (arithmetic_expression -> DOLLAR ID .)
+    ID              reduce using rule 33 (arithmetic_expression -> DOLLAR ID .)
+    HASHTAG         reduce using rule 33 (arithmetic_expression -> DOLLAR ID .)
+    NUMBER          reduce using rule 33 (arithmetic_expression -> DOLLAR ID .)
+    DOLLAR          reduce using rule 33 (arithmetic_expression -> DOLLAR ID .)
+    LPAREN          reduce using rule 33 (arithmetic_expression -> DOLLAR ID .)
+    $end            reduce using rule 33 (arithmetic_expression -> DOLLAR ID .)
+    RPAREN          reduce using rule 33 (arithmetic_expression -> DOLLAR ID .)
+    DONE            reduce using rule 33 (arithmetic_expression -> DOLLAR ID .)
+    ELSE            reduce using rule 33 (arithmetic_expression -> DOLLAR ID .)
+    FI              reduce using rule 33 (arithmetic_expression -> DOLLAR ID .)
+
+
+state 37
+
+    (34) arithmetic_expression -> LPAREN arithmetic_expression . RPAREN
+    (35) arithmetic_expression -> arithmetic_expression . PLUS arithmetic_expression
+    (36) arithmetic_expression -> arithmetic_expression . MINUS arithmetic_expression
+    (37) arithmetic_expression -> arithmetic_expression . TIMES arithmetic_expression
+    (38) arithmetic_expression -> arithmetic_expression . DIVIDE arithmetic_expression
+
+    RPAREN          shift and go to state 60
+    PLUS            shift and go to state 27
+    MINUS           shift and go to state 28
+    TIMES           shift and go to state 29
+    DIVIDE          shift and go to state 30
+
+
+state 38
+
+    (26) comment -> HASHTAG ID .
+
+    WHILE           reduce using rule 26 (comment -> HASHTAG ID .)
+    IF              reduce using rule 26 (comment -> HASHTAG ID .)
+    FOR             reduce using rule 26 (comment -> HASHTAG ID .)
+    ID              reduce using rule 26 (comment -> HASHTAG ID .)
+    HASHTAG         reduce using rule 26 (comment -> HASHTAG ID .)
+    NUMBER          reduce using rule 26 (comment -> HASHTAG ID .)
+    DOLLAR          reduce using rule 26 (comment -> HASHTAG ID .)
+    LPAREN          reduce using rule 26 (comment -> HASHTAG ID .)
+    $end            reduce using rule 26 (comment -> HASHTAG ID .)
+    DONE            reduce using rule 26 (comment -> HASHTAG ID .)
+    ELSE            reduce using rule 26 (comment -> HASHTAG ID .)
+    FI              reduce using rule 26 (comment -> HASHTAG ID .)
+
+
+state 39
+
+    (27) insertion -> command ID INSERTION . ID
+
+    ID              shift and go to state 61
+
+
+state 40
+
+    (28) insertion -> command STRING INSERTION . ID
+
+    ID              shift and go to state 62
+
+
+state 41
+
+    (25) command -> command MINUS MINUS . ID
+
+    ID              shift and go to state 63
+
+
+state 42
+
+    (24) command -> command MINUS ID .
+
+    ID              reduce using rule 24 (command -> command MINUS ID .)
+    NUMBER          reduce using rule 24 (command -> command MINUS ID .)
+    STRING          reduce using rule 24 (command -> command MINUS ID .)
+    MINUS           reduce using rule 24 (command -> command MINUS ID .)
+    PIPE            reduce using rule 24 (command -> command MINUS ID .)
+    WHILE           reduce using rule 24 (command -> command MINUS ID .)
+    IF              reduce using rule 24 (command -> command MINUS ID .)
+    FOR             reduce using rule 24 (command -> command MINUS ID .)
+    HASHTAG         reduce using rule 24 (command -> command MINUS ID .)
+    DOLLAR          reduce using rule 24 (command -> command MINUS ID .)
+    LPAREN          reduce using rule 24 (command -> command MINUS ID .)
+    $end            reduce using rule 24 (command -> command MINUS ID .)
+    DONE            reduce using rule 24 (command -> command MINUS ID .)
+    ELSE            reduce using rule 24 (command -> command MINUS ID .)
+    FI              reduce using rule 24 (command -> command MINUS ID .)
+    DO              reduce using rule 24 (command -> command MINUS ID .)
+
+
+state 43
+
+    (29) pipe_command -> command PIPE command .
+    (21) command -> command . ID
+    (22) command -> command . NUMBER
+    (23) command -> command . STRING
+    (24) command -> command . MINUS ID
+    (25) command -> command . MINUS MINUS ID
+
+  ! shift/reduce conflict for ID resolved as shift
+  ! shift/reduce conflict for NUMBER resolved as shift
+    WHILE           reduce using rule 29 (pipe_command -> command PIPE command .)
+    IF              reduce using rule 29 (pipe_command -> command PIPE command .)
+    FOR             reduce using rule 29 (pipe_command -> command PIPE command .)
+    HASHTAG         reduce using rule 29 (pipe_command -> command PIPE command .)
+    DOLLAR          reduce using rule 29 (pipe_command -> command PIPE command .)
+    LPAREN          reduce using rule 29 (pipe_command -> command PIPE command .)
+    $end            reduce using rule 29 (pipe_command -> command PIPE command .)
+    DONE            reduce using rule 29 (pipe_command -> command PIPE command .)
+    ELSE            reduce using rule 29 (pipe_command -> command PIPE command .)
+    FI              reduce using rule 29 (pipe_command -> command PIPE command .)
+    ID              shift and go to state 64
+    NUMBER          shift and go to state 23
+    STRING          shift and go to state 65
+    MINUS           shift and go to state 25
+
+  ! ID              [ reduce using rule 29 (pipe_command -> command PIPE command .) ]
+  ! NUMBER          [ reduce using rule 29 (pipe_command -> command PIPE command .) ]
+
+
+state 44
+
+    (20) command -> ID .
+
+    ID              reduce using rule 20 (command -> ID .)
+    NUMBER          reduce using rule 20 (command -> ID .)
+    STRING          reduce using rule 20 (command -> ID .)
+    MINUS           reduce using rule 20 (command -> ID .)
+    WHILE           reduce using rule 20 (command -> ID .)
+    IF              reduce using rule 20 (command -> ID .)
+    FOR             reduce using rule 20 (command -> ID .)
+    HASHTAG         reduce using rule 20 (command -> ID .)
+    DOLLAR          reduce using rule 20 (command -> ID .)
+    LPAREN          reduce using rule 20 (command -> ID .)
+    $end            reduce using rule 20 (command -> ID .)
+    DONE            reduce using rule 20 (command -> ID .)
+    ELSE            reduce using rule 20 (command -> ID .)
+    FI              reduce using rule 20 (command -> ID .)
+    DO              reduce using rule 20 (command -> ID .)
+
+
+state 45
+
+    (35) arithmetic_expression -> arithmetic_expression PLUS arithmetic_expression .
+    (35) arithmetic_expression -> arithmetic_expression . PLUS arithmetic_expression
+    (36) arithmetic_expression -> arithmetic_expression . MINUS arithmetic_expression
+    (37) arithmetic_expression -> arithmetic_expression . TIMES arithmetic_expression
+    (38) arithmetic_expression -> arithmetic_expression . DIVIDE arithmetic_expression
+
+  ! shift/reduce conflict for PLUS resolved as shift
+  ! shift/reduce conflict for MINUS resolved as shift
+  ! shift/reduce conflict for TIMES resolved as shift
+  ! shift/reduce conflict for DIVIDE resolved as shift
+    WHILE           reduce using rule 35 (arithmetic_expression -> arithmetic_expression PLUS arithmetic_expression .)
+    IF              reduce using rule 35 (arithmetic_expression -> arithmetic_expression PLUS arithmetic_expression .)
+    FOR             reduce using rule 35 (arithmetic_expression -> arithmetic_expression PLUS arithmetic_expression .)
+    ID              reduce using rule 35 (arithmetic_expression -> arithmetic_expression PLUS arithmetic_expression .)
+    HASHTAG         reduce using rule 35 (arithmetic_expression -> arithmetic_expression PLUS arithmetic_expression .)
+    NUMBER          reduce using rule 35 (arithmetic_expression -> arithmetic_expression PLUS arithmetic_expression .)
+    DOLLAR          reduce using rule 35 (arithmetic_expression -> arithmetic_expression PLUS arithmetic_expression .)
+    LPAREN          reduce using rule 35 (arithmetic_expression -> arithmetic_expression PLUS arithmetic_expression .)
+    $end            reduce using rule 35 (arithmetic_expression -> arithmetic_expression PLUS arithmetic_expression .)
+    RPAREN          reduce using rule 35 (arithmetic_expression -> arithmetic_expression PLUS arithmetic_expression .)
+    DONE            reduce using rule 35 (arithmetic_expression -> arithmetic_expression PLUS arithmetic_expression .)
+    ELSE            reduce using rule 35 (arithmetic_expression -> arithmetic_expression PLUS arithmetic_expression .)
+    FI              reduce using rule 35 (arithmetic_expression -> arithmetic_expression PLUS arithmetic_expression .)
+    PLUS            shift and go to state 27
+    MINUS           shift and go to state 28
+    TIMES           shift and go to state 29
+    DIVIDE          shift and go to state 30
+
+  ! PLUS            [ reduce using rule 35 (arithmetic_expression -> arithmetic_expression PLUS arithmetic_expression .) ]
+  ! MINUS           [ reduce using rule 35 (arithmetic_expression -> arithmetic_expression PLUS arithmetic_expression .) ]
+  ! TIMES           [ reduce using rule 35 (arithmetic_expression -> arithmetic_expression PLUS arithmetic_expression .) ]
+  ! DIVIDE          [ reduce using rule 35 (arithmetic_expression -> arithmetic_expression PLUS arithmetic_expression .) ]
+
+
+state 46
+
+    (36) arithmetic_expression -> arithmetic_expression MINUS arithmetic_expression .
+    (35) arithmetic_expression -> arithmetic_expression . PLUS arithmetic_expression
+    (36) arithmetic_expression -> arithmetic_expression . MINUS arithmetic_expression
+    (37) arithmetic_expression -> arithmetic_expression . TIMES arithmetic_expression
+    (38) arithmetic_expression -> arithmetic_expression . DIVIDE arithmetic_expression
+
+  ! shift/reduce conflict for PLUS resolved as shift
+  ! shift/reduce conflict for MINUS resolved as shift
+  ! shift/reduce conflict for TIMES resolved as shift
+  ! shift/reduce conflict for DIVIDE resolved as shift
+    WHILE           reduce using rule 36 (arithmetic_expression -> arithmetic_expression MINUS arithmetic_expression .)
+    IF              reduce using rule 36 (arithmetic_expression -> arithmetic_expression MINUS arithmetic_expression .)
+    FOR             reduce using rule 36 (arithmetic_expression -> arithmetic_expression MINUS arithmetic_expression .)
+    ID              reduce using rule 36 (arithmetic_expression -> arithmetic_expression MINUS arithmetic_expression .)
+    HASHTAG         reduce using rule 36 (arithmetic_expression -> arithmetic_expression MINUS arithmetic_expression .)
+    NUMBER          reduce using rule 36 (arithmetic_expression -> arithmetic_expression MINUS arithmetic_expression .)
+    DOLLAR          reduce using rule 36 (arithmetic_expression -> arithmetic_expression MINUS arithmetic_expression .)
+    LPAREN          reduce using rule 36 (arithmetic_expression -> arithmetic_expression MINUS arithmetic_expression .)
+    $end            reduce using rule 36 (arithmetic_expression -> arithmetic_expression MINUS arithmetic_expression .)
+    RPAREN          reduce using rule 36 (arithmetic_expression -> arithmetic_expression MINUS arithmetic_expression .)
+    DONE            reduce using rule 36 (arithmetic_expression -> arithmetic_expression MINUS arithmetic_expression .)
+    ELSE            reduce using rule 36 (arithmetic_expression -> arithmetic_expression MINUS arithmetic_expression .)
+    FI              reduce using rule 36 (arithmetic_expression -> arithmetic_expression MINUS arithmetic_expression .)
+    PLUS            shift and go to state 27
+    MINUS           shift and go to state 28
+    TIMES           shift and go to state 29
+    DIVIDE          shift and go to state 30
+
+  ! PLUS            [ reduce using rule 36 (arithmetic_expression -> arithmetic_expression MINUS arithmetic_expression .) ]
+  ! MINUS           [ reduce using rule 36 (arithmetic_expression -> arithmetic_expression MINUS arithmetic_expression .) ]
+  ! TIMES           [ reduce using rule 36 (arithmetic_expression -> arithmetic_expression MINUS arithmetic_expression .) ]
+  ! DIVIDE          [ reduce using rule 36 (arithmetic_expression -> arithmetic_expression MINUS arithmetic_expression .) ]
+
+
+state 47
+
+    (37) arithmetic_expression -> arithmetic_expression TIMES arithmetic_expression .
+    (35) arithmetic_expression -> arithmetic_expression . PLUS arithmetic_expression
+    (36) arithmetic_expression -> arithmetic_expression . MINUS arithmetic_expression
+    (37) arithmetic_expression -> arithmetic_expression . TIMES arithmetic_expression
+    (38) arithmetic_expression -> arithmetic_expression . DIVIDE arithmetic_expression
+
+  ! shift/reduce conflict for PLUS resolved as shift
+  ! shift/reduce conflict for MINUS resolved as shift
+  ! shift/reduce conflict for TIMES resolved as shift
+  ! shift/reduce conflict for DIVIDE resolved as shift
+    WHILE           reduce using rule 37 (arithmetic_expression -> arithmetic_expression TIMES arithmetic_expression .)
+    IF              reduce using rule 37 (arithmetic_expression -> arithmetic_expression TIMES arithmetic_expression .)
+    FOR             reduce using rule 37 (arithmetic_expression -> arithmetic_expression TIMES arithmetic_expression .)
+    ID              reduce using rule 37 (arithmetic_expression -> arithmetic_expression TIMES arithmetic_expression .)
+    HASHTAG         reduce using rule 37 (arithmetic_expression -> arithmetic_expression TIMES arithmetic_expression .)
+    NUMBER          reduce using rule 37 (arithmetic_expression -> arithmetic_expression TIMES arithmetic_expression .)
+    DOLLAR          reduce using rule 37 (arithmetic_expression -> arithmetic_expression TIMES arithmetic_expression .)
+    LPAREN          reduce using rule 37 (arithmetic_expression -> arithmetic_expression TIMES arithmetic_expression .)
+    $end            reduce using rule 37 (arithmetic_expression -> arithmetic_expression TIMES arithmetic_expression .)
+    RPAREN          reduce using rule 37 (arithmetic_expression -> arithmetic_expression TIMES arithmetic_expression .)
+    DONE            reduce using rule 37 (arithmetic_expression -> arithmetic_expression TIMES arithmetic_expression .)
+    ELSE            reduce using rule 37 (arithmetic_expression -> arithmetic_expression TIMES arithmetic_expression .)
+    FI              reduce using rule 37 (arithmetic_expression -> arithmetic_expression TIMES arithmetic_expression .)
+    PLUS            shift and go to state 27
+    MINUS           shift and go to state 28
+    TIMES           shift and go to state 29
+    DIVIDE          shift and go to state 30
+
+  ! PLUS            [ reduce using rule 37 (arithmetic_expression -> arithmetic_expression TIMES arithmetic_expression .) ]
+  ! MINUS           [ reduce using rule 37 (arithmetic_expression -> arithmetic_expression TIMES arithmetic_expression .) ]
+  ! TIMES           [ reduce using rule 37 (arithmetic_expression -> arithmetic_expression TIMES arithmetic_expression .) ]
+  ! DIVIDE          [ reduce using rule 37 (arithmetic_expression -> arithmetic_expression TIMES arithmetic_expression .) ]
+
+
+state 48
+
+    (38) arithmetic_expression -> arithmetic_expression DIVIDE arithmetic_expression .
+    (35) arithmetic_expression -> arithmetic_expression . PLUS arithmetic_expression
+    (36) arithmetic_expression -> arithmetic_expression . MINUS arithmetic_expression
+    (37) arithmetic_expression -> arithmetic_expression . TIMES arithmetic_expression
+    (38) arithmetic_expression -> arithmetic_expression . DIVIDE arithmetic_expression
+
+  ! shift/reduce conflict for PLUS resolved as shift
+  ! shift/reduce conflict for MINUS resolved as shift
+  ! shift/reduce conflict for TIMES resolved as shift
+  ! shift/reduce conflict for DIVIDE resolved as shift
+    WHILE           reduce using rule 38 (arithmetic_expression -> arithmetic_expression DIVIDE arithmetic_expression .)
+    IF              reduce using rule 38 (arithmetic_expression -> arithmetic_expression DIVIDE arithmetic_expression .)
+    FOR             reduce using rule 38 (arithmetic_expression -> arithmetic_expression DIVIDE arithmetic_expression .)
+    ID              reduce using rule 38 (arithmetic_expression -> arithmetic_expression DIVIDE arithmetic_expression .)
+    HASHTAG         reduce using rule 38 (arithmetic_expression -> arithmetic_expression DIVIDE arithmetic_expression .)
+    NUMBER          reduce using rule 38 (arithmetic_expression -> arithmetic_expression DIVIDE arithmetic_expression .)
+    DOLLAR          reduce using rule 38 (arithmetic_expression -> arithmetic_expression DIVIDE arithmetic_expression .)
+    LPAREN          reduce using rule 38 (arithmetic_expression -> arithmetic_expression DIVIDE arithmetic_expression .)
+    $end            reduce using rule 38 (arithmetic_expression -> arithmetic_expression DIVIDE arithmetic_expression .)
+    RPAREN          reduce using rule 38 (arithmetic_expression -> arithmetic_expression DIVIDE arithmetic_expression .)
+    DONE            reduce using rule 38 (arithmetic_expression -> arithmetic_expression DIVIDE arithmetic_expression .)
+    ELSE            reduce using rule 38 (arithmetic_expression -> arithmetic_expression DIVIDE arithmetic_expression .)
+    FI              reduce using rule 38 (arithmetic_expression -> arithmetic_expression DIVIDE arithmetic_expression .)
+    PLUS            shift and go to state 27
+    MINUS           shift and go to state 28
+    TIMES           shift and go to state 29
+    DIVIDE          shift and go to state 30
+
+  ! PLUS            [ reduce using rule 38 (arithmetic_expression -> arithmetic_expression DIVIDE arithmetic_expression .) ]
+  ! MINUS           [ reduce using rule 38 (arithmetic_expression -> arithmetic_expression DIVIDE arithmetic_expression .) ]
+  ! TIMES           [ reduce using rule 38 (arithmetic_expression -> arithmetic_expression DIVIDE arithmetic_expression .) ]
+  ! DIVIDE          [ reduce using rule 38 (arithmetic_expression -> arithmetic_expression DIVIDE arithmetic_expression .) ]
+
+
+state 49
+
+    (30) while_statement -> WHILE condition DO . statements DONE
+    (2) statements -> . statement
+    (3) statements -> . statements statement
+    (11) statement -> . while_statement
+    (12) statement -> . if_statement
+    (13) statement -> . for_statement
+    (14) statement -> . command
+    (15) statement -> . assignment
+    (16) statement -> . comment
+    (17) statement -> . arithmetic_expression
+    (18) statement -> . insertion
+    (19) statement -> . pipe_command
+    (30) while_statement -> . WHILE condition DO statements DONE
+    (40) if_statement -> . IF condition THEN statements ELSE statements FI
+    (39) for_statement -> . FOR ID IN command DO statements DONE
+    (20) command -> . ID
+    (21) command -> . command ID
+    (22) command -> . command NUMBER
+    (23) command -> . command STRING
+    (24) command -> . command MINUS ID
+    (25) command -> . command MINUS MINUS ID
+    (4) assignment -> . ID EQUALS expression
+    (5) assignment -> . ID EQUALS DOLLAR LPAREN arithmetic_expression RPAREN
+    (26) comment -> . HASHTAG ID
+    (32) arithmetic_expression -> . NUMBER
+    (33) arithmetic_expression -> . DOLLAR ID
+    (34) arithmetic_expression -> . LPAREN arithmetic_expression RPAREN
+    (35) arithmetic_expression -> . arithmetic_expression PLUS arithmetic_expression
+    (36) arithmetic_expression -> . arithmetic_expression MINUS arithmetic_expression
+    (37) arithmetic_expression -> . arithmetic_expression TIMES arithmetic_expression
+    (38) arithmetic_expression -> . arithmetic_expression DIVIDE arithmetic_expression
+    (27) insertion -> . command ID INSERTION ID
+    (28) insertion -> . command STRING INSERTION ID
+    (29) pipe_command -> . command PIPE command
+
+    WHILE           shift and go to state 13
+    IF              shift and go to state 14
+    FOR             shift and go to state 15
+    ID              shift and go to state 16
+    HASHTAG         shift and go to state 20
+    NUMBER          shift and go to state 17
+    DOLLAR          shift and go to state 18
+    LPAREN          shift and go to state 19
+
+    statements                     shift and go to state 66
+    statement                      shift and go to state 3
+    while_statement                shift and go to state 4
+    if_statement                   shift and go to state 5
+    for_statement                  shift and go to state 6
+    command                        shift and go to state 7
+    assignment                     shift and go to state 8
+    comment                        shift and go to state 9
+    arithmetic_expression          shift and go to state 10
+    insertion                      shift and go to state 11
+    pipe_command                   shift and go to state 12
+
+state 50
+
+    (31) condition -> LEFT_BRACKET expression . RIGHT_BRACKET
+
+    RIGHT_BRACKET   shift and go to state 67
+
+
+state 51
+
+    (6) expression -> NUMBER .
+
+    RIGHT_BRACKET   reduce using rule 6 (expression -> NUMBER .)
+    WHILE           reduce using rule 6 (expression -> NUMBER .)
+    IF              reduce using rule 6 (expression -> NUMBER .)
+    FOR             reduce using rule 6 (expression -> NUMBER .)
+    ID              reduce using rule 6 (expression -> NUMBER .)
+    HASHTAG         reduce using rule 6 (expression -> NUMBER .)
+    NUMBER          reduce using rule 6 (expression -> NUMBER .)
+    DOLLAR          reduce using rule 6 (expression -> NUMBER .)
+    LPAREN          reduce using rule 6 (expression -> NUMBER .)
+    $end            reduce using rule 6 (expression -> NUMBER .)
+    DONE            reduce using rule 6 (expression -> NUMBER .)
+    ELSE            reduce using rule 6 (expression -> NUMBER .)
+    FI              reduce using rule 6 (expression -> NUMBER .)
+    RPAREN          reduce using rule 6 (expression -> NUMBER .)
+
+
+state 52
+
+    (7) expression -> STRING .
+
+    RIGHT_BRACKET   reduce using rule 7 (expression -> STRING .)
+    WHILE           reduce using rule 7 (expression -> STRING .)
+    IF              reduce using rule 7 (expression -> STRING .)
+    FOR             reduce using rule 7 (expression -> STRING .)
+    ID              reduce using rule 7 (expression -> STRING .)
+    HASHTAG         reduce using rule 7 (expression -> STRING .)
+    NUMBER          reduce using rule 7 (expression -> STRING .)
+    DOLLAR          reduce using rule 7 (expression -> STRING .)
+    LPAREN          reduce using rule 7 (expression -> STRING .)
+    $end            reduce using rule 7 (expression -> STRING .)
+    DONE            reduce using rule 7 (expression -> STRING .)
+    ELSE            reduce using rule 7 (expression -> STRING .)
+    FI              reduce using rule 7 (expression -> STRING .)
+    RPAREN          reduce using rule 7 (expression -> STRING .)
+
+
+state 53
+
+    (8) expression -> MINUS . expression
+    (6) expression -> . NUMBER
+    (7) expression -> . STRING
+    (8) expression -> . MINUS expression
+    (9) expression -> . ID
+    (10) expression -> . LPAREN expression RPAREN
+
+    NUMBER          shift and go to state 51
+    STRING          shift and go to state 52
+    MINUS           shift and go to state 53
+    ID              shift and go to state 54
+    LPAREN          shift and go to state 55
+
+    expression                     shift and go to state 68
+
+state 54
+
+    (9) expression -> ID .
+
+    RIGHT_BRACKET   reduce using rule 9 (expression -> ID .)
+    WHILE           reduce using rule 9 (expression -> ID .)
+    IF              reduce using rule 9 (expression -> ID .)
+    FOR             reduce using rule 9 (expression -> ID .)
+    ID              reduce using rule 9 (expression -> ID .)
+    HASHTAG         reduce using rule 9 (expression -> ID .)
+    NUMBER          reduce using rule 9 (expression -> ID .)
+    DOLLAR          reduce using rule 9 (expression -> ID .)
+    LPAREN          reduce using rule 9 (expression -> ID .)
+    $end            reduce using rule 9 (expression -> ID .)
+    DONE            reduce using rule 9 (expression -> ID .)
+    ELSE            reduce using rule 9 (expression -> ID .)
+    FI              reduce using rule 9 (expression -> ID .)
+    RPAREN          reduce using rule 9 (expression -> ID .)
+
+
+state 55
+
+    (10) expression -> LPAREN . expression RPAREN
+    (6) expression -> . NUMBER
+    (7) expression -> . STRING
+    (8) expression -> . MINUS expression
+    (9) expression -> . ID
+    (10) expression -> . LPAREN expression RPAREN
+
+    NUMBER          shift and go to state 51
+    STRING          shift and go to state 52
+    MINUS           shift and go to state 53
+    ID              shift and go to state 54
+    LPAREN          shift and go to state 55
+
+    expression                     shift and go to state 69
+
+state 56
+
+    (40) if_statement -> IF condition THEN . statements ELSE statements FI
+    (2) statements -> . statement
+    (3) statements -> . statements statement
+    (11) statement -> . while_statement
+    (12) statement -> . if_statement
+    (13) statement -> . for_statement
+    (14) statement -> . command
+    (15) statement -> . assignment
+    (16) statement -> . comment
+    (17) statement -> . arithmetic_expression
+    (18) statement -> . insertion
+    (19) statement -> . pipe_command
+    (30) while_statement -> . WHILE condition DO statements DONE
+    (40) if_statement -> . IF condition THEN statements ELSE statements FI
+    (39) for_statement -> . FOR ID IN command DO statements DONE
+    (20) command -> . ID
+    (21) command -> . command ID
+    (22) command -> . command NUMBER
+    (23) command -> . command STRING
+    (24) command -> . command MINUS ID
+    (25) command -> . command MINUS MINUS ID
+    (4) assignment -> . ID EQUALS expression
+    (5) assignment -> . ID EQUALS DOLLAR LPAREN arithmetic_expression RPAREN
+    (26) comment -> . HASHTAG ID
+    (32) arithmetic_expression -> . NUMBER
+    (33) arithmetic_expression -> . DOLLAR ID
+    (34) arithmetic_expression -> . LPAREN arithmetic_expression RPAREN
+    (35) arithmetic_expression -> . arithmetic_expression PLUS arithmetic_expression
+    (36) arithmetic_expression -> . arithmetic_expression MINUS arithmetic_expression
+    (37) arithmetic_expression -> . arithmetic_expression TIMES arithmetic_expression
+    (38) arithmetic_expression -> . arithmetic_expression DIVIDE arithmetic_expression
+    (27) insertion -> . command ID INSERTION ID
+    (28) insertion -> . command STRING INSERTION ID
+    (29) pipe_command -> . command PIPE command
+
+    WHILE           shift and go to state 13
+    IF              shift and go to state 14
+    FOR             shift and go to state 15
+    ID              shift and go to state 16
+    HASHTAG         shift and go to state 20
+    NUMBER          shift and go to state 17
+    DOLLAR          shift and go to state 18
+    LPAREN          shift and go to state 19
+
+    statements                     shift and go to state 70
+    statement                      shift and go to state 3
+    while_statement                shift and go to state 4
+    if_statement                   shift and go to state 5
+    for_statement                  shift and go to state 6
+    command                        shift and go to state 7
+    assignment                     shift and go to state 8
+    comment                        shift and go to state 9
+    arithmetic_expression          shift and go to state 10
+    insertion                      shift and go to state 11
+    pipe_command                   shift and go to state 12
+
+state 57
+
+    (39) for_statement -> FOR ID IN . command DO statements DONE
+    (20) command -> . ID
+    (21) command -> . command ID
+    (22) command -> . command NUMBER
+    (23) command -> . command STRING
+    (24) command -> . command MINUS ID
+    (25) command -> . command MINUS MINUS ID
+
+    ID              shift and go to state 44
+
+    command                        shift and go to state 71
+
+state 58
+
+    (4) assignment -> ID EQUALS expression .
+
+    WHILE           reduce using rule 4 (assignment -> ID EQUALS expression .)
+    IF              reduce using rule 4 (assignment -> ID EQUALS expression .)
+    FOR             reduce using rule 4 (assignment -> ID EQUALS expression .)
+    ID              reduce using rule 4 (assignment -> ID EQUALS expression .)
+    HASHTAG         reduce using rule 4 (assignment -> ID EQUALS expression .)
+    NUMBER          reduce using rule 4 (assignment -> ID EQUALS expression .)
+    DOLLAR          reduce using rule 4 (assignment -> ID EQUALS expression .)
+    LPAREN          reduce using rule 4 (assignment -> ID EQUALS expression .)
+    $end            reduce using rule 4 (assignment -> ID EQUALS expression .)
+    DONE            reduce using rule 4 (assignment -> ID EQUALS expression .)
+    ELSE            reduce using rule 4 (assignment -> ID EQUALS expression .)
+    FI              reduce using rule 4 (assignment -> ID EQUALS expression .)
+
+
+state 59
+
+    (5) assignment -> ID EQUALS DOLLAR . LPAREN arithmetic_expression RPAREN
+
+    LPAREN          shift and go to state 72
+
+
+state 60
+
+    (34) arithmetic_expression -> LPAREN arithmetic_expression RPAREN .
+
+    PLUS            reduce using rule 34 (arithmetic_expression -> LPAREN arithmetic_expression RPAREN .)
+    MINUS           reduce using rule 34 (arithmetic_expression -> LPAREN arithmetic_expression RPAREN .)
+    TIMES           reduce using rule 34 (arithmetic_expression -> LPAREN arithmetic_expression RPAREN .)
+    DIVIDE          reduce using rule 34 (arithmetic_expression -> LPAREN arithmetic_expression RPAREN .)
+    WHILE           reduce using rule 34 (arithmetic_expression -> LPAREN arithmetic_expression RPAREN .)
+    IF              reduce using rule 34 (arithmetic_expression -> LPAREN arithmetic_expression RPAREN .)
+    FOR             reduce using rule 34 (arithmetic_expression -> LPAREN arithmetic_expression RPAREN .)
+    ID              reduce using rule 34 (arithmetic_expression -> LPAREN arithmetic_expression RPAREN .)
+    HASHTAG         reduce using rule 34 (arithmetic_expression -> LPAREN arithmetic_expression RPAREN .)
+    NUMBER          reduce using rule 34 (arithmetic_expression -> LPAREN arithmetic_expression RPAREN .)
+    DOLLAR          reduce using rule 34 (arithmetic_expression -> LPAREN arithmetic_expression RPAREN .)
+    LPAREN          reduce using rule 34 (arithmetic_expression -> LPAREN arithmetic_expression RPAREN .)
+    $end            reduce using rule 34 (arithmetic_expression -> LPAREN arithmetic_expression RPAREN .)
+    RPAREN          reduce using rule 34 (arithmetic_expression -> LPAREN arithmetic_expression RPAREN .)
+    DONE            reduce using rule 34 (arithmetic_expression -> LPAREN arithmetic_expression RPAREN .)
+    ELSE            reduce using rule 34 (arithmetic_expression -> LPAREN arithmetic_expression RPAREN .)
+    FI              reduce using rule 34 (arithmetic_expression -> LPAREN arithmetic_expression RPAREN .)
+
+
+state 61
+
+    (27) insertion -> command ID INSERTION ID .
+
+    WHILE           reduce using rule 27 (insertion -> command ID INSERTION ID .)
+    IF              reduce using rule 27 (insertion -> command ID INSERTION ID .)
+    FOR             reduce using rule 27 (insertion -> command ID INSERTION ID .)
+    ID              reduce using rule 27 (insertion -> command ID INSERTION ID .)
+    HASHTAG         reduce using rule 27 (insertion -> command ID INSERTION ID .)
+    NUMBER          reduce using rule 27 (insertion -> command ID INSERTION ID .)
+    DOLLAR          reduce using rule 27 (insertion -> command ID INSERTION ID .)
+    LPAREN          reduce using rule 27 (insertion -> command ID INSERTION ID .)
+    $end            reduce using rule 27 (insertion -> command ID INSERTION ID .)
+    DONE            reduce using rule 27 (insertion -> command ID INSERTION ID .)
+    ELSE            reduce using rule 27 (insertion -> command ID INSERTION ID .)
+    FI              reduce using rule 27 (insertion -> command ID INSERTION ID .)
+
+
+state 62
+
+    (28) insertion -> command STRING INSERTION ID .
+
+    WHILE           reduce using rule 28 (insertion -> command STRING INSERTION ID .)
+    IF              reduce using rule 28 (insertion -> command STRING INSERTION ID .)
+    FOR             reduce using rule 28 (insertion -> command STRING INSERTION ID .)
+    ID              reduce using rule 28 (insertion -> command STRING INSERTION ID .)
+    HASHTAG         reduce using rule 28 (insertion -> command STRING INSERTION ID .)
+    NUMBER          reduce using rule 28 (insertion -> command STRING INSERTION ID .)
+    DOLLAR          reduce using rule 28 (insertion -> command STRING INSERTION ID .)
+    LPAREN          reduce using rule 28 (insertion -> command STRING INSERTION ID .)
+    $end            reduce using rule 28 (insertion -> command STRING INSERTION ID .)
+    DONE            reduce using rule 28 (insertion -> command STRING INSERTION ID .)
+    ELSE            reduce using rule 28 (insertion -> command STRING INSERTION ID .)
+    FI              reduce using rule 28 (insertion -> command STRING INSERTION ID .)
+
+
+state 63
+
+    (25) command -> command MINUS MINUS ID .
+
+    ID              reduce using rule 25 (command -> command MINUS MINUS ID .)
+    NUMBER          reduce using rule 25 (command -> command MINUS MINUS ID .)
+    STRING          reduce using rule 25 (command -> command MINUS MINUS ID .)
+    MINUS           reduce using rule 25 (command -> command MINUS MINUS ID .)
+    PIPE            reduce using rule 25 (command -> command MINUS MINUS ID .)
+    WHILE           reduce using rule 25 (command -> command MINUS MINUS ID .)
+    IF              reduce using rule 25 (command -> command MINUS MINUS ID .)
+    FOR             reduce using rule 25 (command -> command MINUS MINUS ID .)
+    HASHTAG         reduce using rule 25 (command -> command MINUS MINUS ID .)
+    DOLLAR          reduce using rule 25 (command -> command MINUS MINUS ID .)
+    LPAREN          reduce using rule 25 (command -> command MINUS MINUS ID .)
+    $end            reduce using rule 25 (command -> command MINUS MINUS ID .)
+    DONE            reduce using rule 25 (command -> command MINUS MINUS ID .)
+    ELSE            reduce using rule 25 (command -> command MINUS MINUS ID .)
+    FI              reduce using rule 25 (command -> command MINUS MINUS ID .)
+    DO              reduce using rule 25 (command -> command MINUS MINUS ID .)
+
+
+state 64
+
+    (21) command -> command ID .
+
+    ID              reduce using rule 21 (command -> command ID .)
+    NUMBER          reduce using rule 21 (command -> command ID .)
+    STRING          reduce using rule 21 (command -> command ID .)
+    MINUS           reduce using rule 21 (command -> command ID .)
+    WHILE           reduce using rule 21 (command -> command ID .)
+    IF              reduce using rule 21 (command -> command ID .)
+    FOR             reduce using rule 21 (command -> command ID .)
+    HASHTAG         reduce using rule 21 (command -> command ID .)
+    DOLLAR          reduce using rule 21 (command -> command ID .)
+    LPAREN          reduce using rule 21 (command -> command ID .)
+    $end            reduce using rule 21 (command -> command ID .)
+    DONE            reduce using rule 21 (command -> command ID .)
+    ELSE            reduce using rule 21 (command -> command ID .)
+    FI              reduce using rule 21 (command -> command ID .)
+    DO              reduce using rule 21 (command -> command ID .)
+
+
+state 65
+
+    (23) command -> command STRING .
+
+    ID              reduce using rule 23 (command -> command STRING .)
+    NUMBER          reduce using rule 23 (command -> command STRING .)
+    STRING          reduce using rule 23 (command -> command STRING .)
+    MINUS           reduce using rule 23 (command -> command STRING .)
+    WHILE           reduce using rule 23 (command -> command STRING .)
+    IF              reduce using rule 23 (command -> command STRING .)
+    FOR             reduce using rule 23 (command -> command STRING .)
+    HASHTAG         reduce using rule 23 (command -> command STRING .)
+    DOLLAR          reduce using rule 23 (command -> command STRING .)
+    LPAREN          reduce using rule 23 (command -> command STRING .)
+    $end            reduce using rule 23 (command -> command STRING .)
+    DONE            reduce using rule 23 (command -> command STRING .)
+    ELSE            reduce using rule 23 (command -> command STRING .)
+    FI              reduce using rule 23 (command -> command STRING .)
+    DO              reduce using rule 23 (command -> command STRING .)
+
+
+state 66
+
+    (30) while_statement -> WHILE condition DO statements . DONE
+    (3) statements -> statements . statement
+    (11) statement -> . while_statement
+    (12) statement -> . if_statement
+    (13) statement -> . for_statement
+    (14) statement -> . command
+    (15) statement -> . assignment
+    (16) statement -> . comment
+    (17) statement -> . arithmetic_expression
+    (18) statement -> . insertion
+    (19) statement -> . pipe_command
+    (30) while_statement -> . WHILE condition DO statements DONE
+    (40) if_statement -> . IF condition THEN statements ELSE statements FI
+    (39) for_statement -> . FOR ID IN command DO statements DONE
+    (20) command -> . ID
+    (21) command -> . command ID
+    (22) command -> . command NUMBER
+    (23) command -> . command STRING
+    (24) command -> . command MINUS ID
+    (25) command -> . command MINUS MINUS ID
+    (4) assignment -> . ID EQUALS expression
+    (5) assignment -> . ID EQUALS DOLLAR LPAREN arithmetic_expression RPAREN
+    (26) comment -> . HASHTAG ID
+    (32) arithmetic_expression -> . NUMBER
+    (33) arithmetic_expression -> . DOLLAR ID
+    (34) arithmetic_expression -> . LPAREN arithmetic_expression RPAREN
+    (35) arithmetic_expression -> . arithmetic_expression PLUS arithmetic_expression
+    (36) arithmetic_expression -> . arithmetic_expression MINUS arithmetic_expression
+    (37) arithmetic_expression -> . arithmetic_expression TIMES arithmetic_expression
+    (38) arithmetic_expression -> . arithmetic_expression DIVIDE arithmetic_expression
+    (27) insertion -> . command ID INSERTION ID
+    (28) insertion -> . command STRING INSERTION ID
+    (29) pipe_command -> . command PIPE command
+
+    DONE            shift and go to state 73
+    WHILE           shift and go to state 13
+    IF              shift and go to state 14
+    FOR             shift and go to state 15
+    ID              shift and go to state 16
+    HASHTAG         shift and go to state 20
+    NUMBER          shift and go to state 17
+    DOLLAR          shift and go to state 18
+    LPAREN          shift and go to state 19
+
+    statement                      shift and go to state 21
+    while_statement                shift and go to state 4
+    if_statement                   shift and go to state 5
+    for_statement                  shift and go to state 6
+    command                        shift and go to state 7
+    assignment                     shift and go to state 8
+    comment                        shift and go to state 9
+    arithmetic_expression          shift and go to state 10
+    insertion                      shift and go to state 11
+    pipe_command                   shift and go to state 12
+
+state 67
+
+    (31) condition -> LEFT_BRACKET expression RIGHT_BRACKET .
+
+    DO              reduce using rule 31 (condition -> LEFT_BRACKET expression RIGHT_BRACKET .)
+    THEN            reduce using rule 31 (condition -> LEFT_BRACKET expression RIGHT_BRACKET .)
+
+
+state 68
+
+    (8) expression -> MINUS expression .
+
+    RIGHT_BRACKET   reduce using rule 8 (expression -> MINUS expression .)
+    WHILE           reduce using rule 8 (expression -> MINUS expression .)
+    IF              reduce using rule 8 (expression -> MINUS expression .)
+    FOR             reduce using rule 8 (expression -> MINUS expression .)
+    ID              reduce using rule 8 (expression -> MINUS expression .)
+    HASHTAG         reduce using rule 8 (expression -> MINUS expression .)
+    NUMBER          reduce using rule 8 (expression -> MINUS expression .)
+    DOLLAR          reduce using rule 8 (expression -> MINUS expression .)
+    LPAREN          reduce using rule 8 (expression -> MINUS expression .)
+    $end            reduce using rule 8 (expression -> MINUS expression .)
+    DONE            reduce using rule 8 (expression -> MINUS expression .)
+    ELSE            reduce using rule 8 (expression -> MINUS expression .)
+    FI              reduce using rule 8 (expression -> MINUS expression .)
+    RPAREN          reduce using rule 8 (expression -> MINUS expression .)
+
+
+state 69
+
+    (10) expression -> LPAREN expression . RPAREN
+
+    RPAREN          shift and go to state 74
+
+
+state 70
+
+    (40) if_statement -> IF condition THEN statements . ELSE statements FI
+    (3) statements -> statements . statement
+    (11) statement -> . while_statement
+    (12) statement -> . if_statement
+    (13) statement -> . for_statement
+    (14) statement -> . command
+    (15) statement -> . assignment
+    (16) statement -> . comment
+    (17) statement -> . arithmetic_expression
+    (18) statement -> . insertion
+    (19) statement -> . pipe_command
+    (30) while_statement -> . WHILE condition DO statements DONE
+    (40) if_statement -> . IF condition THEN statements ELSE statements FI
+    (39) for_statement -> . FOR ID IN command DO statements DONE
+    (20) command -> . ID
+    (21) command -> . command ID
+    (22) command -> . command NUMBER
+    (23) command -> . command STRING
+    (24) command -> . command MINUS ID
+    (25) command -> . command MINUS MINUS ID
+    (4) assignment -> . ID EQUALS expression
+    (5) assignment -> . ID EQUALS DOLLAR LPAREN arithmetic_expression RPAREN
+    (26) comment -> . HASHTAG ID
+    (32) arithmetic_expression -> . NUMBER
+    (33) arithmetic_expression -> . DOLLAR ID
+    (34) arithmetic_expression -> . LPAREN arithmetic_expression RPAREN
+    (35) arithmetic_expression -> . arithmetic_expression PLUS arithmetic_expression
+    (36) arithmetic_expression -> . arithmetic_expression MINUS arithmetic_expression
+    (37) arithmetic_expression -> . arithmetic_expression TIMES arithmetic_expression
+    (38) arithmetic_expression -> . arithmetic_expression DIVIDE arithmetic_expression
+    (27) insertion -> . command ID INSERTION ID
+    (28) insertion -> . command STRING INSERTION ID
+    (29) pipe_command -> . command PIPE command
+
+    ELSE            shift and go to state 75
+    WHILE           shift and go to state 13
+    IF              shift and go to state 14
+    FOR             shift and go to state 15
+    ID              shift and go to state 16
+    HASHTAG         shift and go to state 20
+    NUMBER          shift and go to state 17
+    DOLLAR          shift and go to state 18
+    LPAREN          shift and go to state 19
+
+    statement                      shift and go to state 21
+    while_statement                shift and go to state 4
+    if_statement                   shift and go to state 5
+    for_statement                  shift and go to state 6
+    command                        shift and go to state 7
+    assignment                     shift and go to state 8
+    comment                        shift and go to state 9
+    arithmetic_expression          shift and go to state 10
+    insertion                      shift and go to state 11
+    pipe_command                   shift and go to state 12
+
+state 71
+
+    (39) for_statement -> FOR ID IN command . DO statements DONE
+    (21) command -> command . ID
+    (22) command -> command . NUMBER
+    (23) command -> command . STRING
+    (24) command -> command . MINUS ID
+    (25) command -> command . MINUS MINUS ID
+
+    DO              shift and go to state 76
+    ID              shift and go to state 64
+    NUMBER          shift and go to state 23
+    STRING          shift and go to state 65
+    MINUS           shift and go to state 25
+
+
+state 72
+
+    (5) assignment -> ID EQUALS DOLLAR LPAREN . arithmetic_expression RPAREN
+    (32) arithmetic_expression -> . NUMBER
+    (33) arithmetic_expression -> . DOLLAR ID
+    (34) arithmetic_expression -> . LPAREN arithmetic_expression RPAREN
+    (35) arithmetic_expression -> . arithmetic_expression PLUS arithmetic_expression
+    (36) arithmetic_expression -> . arithmetic_expression MINUS arithmetic_expression
+    (37) arithmetic_expression -> . arithmetic_expression TIMES arithmetic_expression
+    (38) arithmetic_expression -> . arithmetic_expression DIVIDE arithmetic_expression
+
+    NUMBER          shift and go to state 17
+    DOLLAR          shift and go to state 18
+    LPAREN          shift and go to state 19
+
+    arithmetic_expression          shift and go to state 77
+
+state 73
+
+    (30) while_statement -> WHILE condition DO statements DONE .
+
+    WHILE           reduce using rule 30 (while_statement -> WHILE condition DO statements DONE .)
+    IF              reduce using rule 30 (while_statement -> WHILE condition DO statements DONE .)
+    FOR             reduce using rule 30 (while_statement -> WHILE condition DO statements DONE .)
+    ID              reduce using rule 30 (while_statement -> WHILE condition DO statements DONE .)
+    HASHTAG         reduce using rule 30 (while_statement -> WHILE condition DO statements DONE .)
+    NUMBER          reduce using rule 30 (while_statement -> WHILE condition DO statements DONE .)
+    DOLLAR          reduce using rule 30 (while_statement -> WHILE condition DO statements DONE .)
+    LPAREN          reduce using rule 30 (while_statement -> WHILE condition DO statements DONE .)
+    $end            reduce using rule 30 (while_statement -> WHILE condition DO statements DONE .)
+    DONE            reduce using rule 30 (while_statement -> WHILE condition DO statements DONE .)
+    ELSE            reduce using rule 30 (while_statement -> WHILE condition DO statements DONE .)
+    FI              reduce using rule 30 (while_statement -> WHILE condition DO statements DONE .)
+
+
+state 74
+
+    (10) expression -> LPAREN expression RPAREN .
+
+    RIGHT_BRACKET   reduce using rule 10 (expression -> LPAREN expression RPAREN .)
+    WHILE           reduce using rule 10 (expression -> LPAREN expression RPAREN .)
+    IF              reduce using rule 10 (expression -> LPAREN expression RPAREN .)
+    FOR             reduce using rule 10 (expression -> LPAREN expression RPAREN .)
+    ID              reduce using rule 10 (expression -> LPAREN expression RPAREN .)
+    HASHTAG         reduce using rule 10 (expression -> LPAREN expression RPAREN .)
+    NUMBER          reduce using rule 10 (expression -> LPAREN expression RPAREN .)
+    DOLLAR          reduce using rule 10 (expression -> LPAREN expression RPAREN .)
+    LPAREN          reduce using rule 10 (expression -> LPAREN expression RPAREN .)
+    $end            reduce using rule 10 (expression -> LPAREN expression RPAREN .)
+    DONE            reduce using rule 10 (expression -> LPAREN expression RPAREN .)
+    ELSE            reduce using rule 10 (expression -> LPAREN expression RPAREN .)
+    FI              reduce using rule 10 (expression -> LPAREN expression RPAREN .)
+    RPAREN          reduce using rule 10 (expression -> LPAREN expression RPAREN .)
+
+
+state 75
+
+    (40) if_statement -> IF condition THEN statements ELSE . statements FI
+    (2) statements -> . statement
+    (3) statements -> . statements statement
+    (11) statement -> . while_statement
+    (12) statement -> . if_statement
+    (13) statement -> . for_statement
+    (14) statement -> . command
+    (15) statement -> . assignment
+    (16) statement -> . comment
+    (17) statement -> . arithmetic_expression
+    (18) statement -> . insertion
+    (19) statement -> . pipe_command
+    (30) while_statement -> . WHILE condition DO statements DONE
+    (40) if_statement -> . IF condition THEN statements ELSE statements FI
+    (39) for_statement -> . FOR ID IN command DO statements DONE
+    (20) command -> . ID
+    (21) command -> . command ID
+    (22) command -> . command NUMBER
+    (23) command -> . command STRING
+    (24) command -> . command MINUS ID
+    (25) command -> . command MINUS MINUS ID
+    (4) assignment -> . ID EQUALS expression
+    (5) assignment -> . ID EQUALS DOLLAR LPAREN arithmetic_expression RPAREN
+    (26) comment -> . HASHTAG ID
+    (32) arithmetic_expression -> . NUMBER
+    (33) arithmetic_expression -> . DOLLAR ID
+    (34) arithmetic_expression -> . LPAREN arithmetic_expression RPAREN
+    (35) arithmetic_expression -> . arithmetic_expression PLUS arithmetic_expression
+    (36) arithmetic_expression -> . arithmetic_expression MINUS arithmetic_expression
+    (37) arithmetic_expression -> . arithmetic_expression TIMES arithmetic_expression
+    (38) arithmetic_expression -> . arithmetic_expression DIVIDE arithmetic_expression
+    (27) insertion -> . command ID INSERTION ID
+    (28) insertion -> . command STRING INSERTION ID
+    (29) pipe_command -> . command PIPE command
+
+    WHILE           shift and go to state 13
+    IF              shift and go to state 14
+    FOR             shift and go to state 15
+    ID              shift and go to state 16
+    HASHTAG         shift and go to state 20
+    NUMBER          shift and go to state 17
+    DOLLAR          shift and go to state 18
+    LPAREN          shift and go to state 19
+
+    statements                     shift and go to state 78
+    statement                      shift and go to state 3
+    while_statement                shift and go to state 4
+    if_statement                   shift and go to state 5
+    for_statement                  shift and go to state 6
+    command                        shift and go to state 7
+    assignment                     shift and go to state 8
+    comment                        shift and go to state 9
+    arithmetic_expression          shift and go to state 10
+    insertion                      shift and go to state 11
+    pipe_command                   shift and go to state 12
+
+state 76
+
+    (39) for_statement -> FOR ID IN command DO . statements DONE
+    (2) statements -> . statement
+    (3) statements -> . statements statement
+    (11) statement -> . while_statement
+    (12) statement -> . if_statement
+    (13) statement -> . for_statement
+    (14) statement -> . command
+    (15) statement -> . assignment
+    (16) statement -> . comment
+    (17) statement -> . arithmetic_expression
+    (18) statement -> . insertion
+    (19) statement -> . pipe_command
+    (30) while_statement -> . WHILE condition DO statements DONE
+    (40) if_statement -> . IF condition THEN statements ELSE statements FI
+    (39) for_statement -> . FOR ID IN command DO statements DONE
+    (20) command -> . ID
+    (21) command -> . command ID
+    (22) command -> . command NUMBER
+    (23) command -> . command STRING
+    (24) command -> . command MINUS ID
+    (25) command -> . command MINUS MINUS ID
+    (4) assignment -> . ID EQUALS expression
+    (5) assignment -> . ID EQUALS DOLLAR LPAREN arithmetic_expression RPAREN
+    (26) comment -> . HASHTAG ID
+    (32) arithmetic_expression -> . NUMBER
+    (33) arithmetic_expression -> . DOLLAR ID
+    (34) arithmetic_expression -> . LPAREN arithmetic_expression RPAREN
+    (35) arithmetic_expression -> . arithmetic_expression PLUS arithmetic_expression
+    (36) arithmetic_expression -> . arithmetic_expression MINUS arithmetic_expression
+    (37) arithmetic_expression -> . arithmetic_expression TIMES arithmetic_expression
+    (38) arithmetic_expression -> . arithmetic_expression DIVIDE arithmetic_expression
+    (27) insertion -> . command ID INSERTION ID
+    (28) insertion -> . command STRING INSERTION ID
+    (29) pipe_command -> . command PIPE command
+
+    WHILE           shift and go to state 13
+    IF              shift and go to state 14
+    FOR             shift and go to state 15
+    ID              shift and go to state 16
+    HASHTAG         shift and go to state 20
+    NUMBER          shift and go to state 17
+    DOLLAR          shift and go to state 18
+    LPAREN          shift and go to state 19
+
+    command                        shift and go to state 7
+    statements                     shift and go to state 79
+    statement                      shift and go to state 3
+    while_statement                shift and go to state 4
+    if_statement                   shift and go to state 5
+    for_statement                  shift and go to state 6
+    assignment                     shift and go to state 8
+    comment                        shift and go to state 9
+    arithmetic_expression          shift and go to state 10
+    insertion                      shift and go to state 11
+    pipe_command                   shift and go to state 12
+
+state 77
+
+    (5) assignment -> ID EQUALS DOLLAR LPAREN arithmetic_expression . RPAREN
+    (35) arithmetic_expression -> arithmetic_expression . PLUS arithmetic_expression
+    (36) arithmetic_expression -> arithmetic_expression . MINUS arithmetic_expression
+    (37) arithmetic_expression -> arithmetic_expression . TIMES arithmetic_expression
+    (38) arithmetic_expression -> arithmetic_expression . DIVIDE arithmetic_expression
+
+    RPAREN          shift and go to state 80
+    PLUS            shift and go to state 27
+    MINUS           shift and go to state 28
+    TIMES           shift and go to state 29
+    DIVIDE          shift and go to state 30
+
+
+state 78
+
+    (40) if_statement -> IF condition THEN statements ELSE statements . FI
+    (3) statements -> statements . statement
+    (11) statement -> . while_statement
+    (12) statement -> . if_statement
+    (13) statement -> . for_statement
+    (14) statement -> . command
+    (15) statement -> . assignment
+    (16) statement -> . comment
+    (17) statement -> . arithmetic_expression
+    (18) statement -> . insertion
+    (19) statement -> . pipe_command
+    (30) while_statement -> . WHILE condition DO statements DONE
+    (40) if_statement -> . IF condition THEN statements ELSE statements FI
+    (39) for_statement -> . FOR ID IN command DO statements DONE
+    (20) command -> . ID
+    (21) command -> . command ID
+    (22) command -> . command NUMBER
+    (23) command -> . command STRING
+    (24) command -> . command MINUS ID
+    (25) command -> . command MINUS MINUS ID
+    (4) assignment -> . ID EQUALS expression
+    (5) assignment -> . ID EQUALS DOLLAR LPAREN arithmetic_expression RPAREN
+    (26) comment -> . HASHTAG ID
+    (32) arithmetic_expression -> . NUMBER
+    (33) arithmetic_expression -> . DOLLAR ID
+    (34) arithmetic_expression -> . LPAREN arithmetic_expression RPAREN
+    (35) arithmetic_expression -> . arithmetic_expression PLUS arithmetic_expression
+    (36) arithmetic_expression -> . arithmetic_expression MINUS arithmetic_expression
+    (37) arithmetic_expression -> . arithmetic_expression TIMES arithmetic_expression
+    (38) arithmetic_expression -> . arithmetic_expression DIVIDE arithmetic_expression
+    (27) insertion -> . command ID INSERTION ID
+    (28) insertion -> . command STRING INSERTION ID
+    (29) pipe_command -> . command PIPE command
+
+    FI              shift and go to state 81
+    WHILE           shift and go to state 13
+    IF              shift and go to state 14
+    FOR             shift and go to state 15
+    ID              shift and go to state 16
+    HASHTAG         shift and go to state 20
+    NUMBER          shift and go to state 17
+    DOLLAR          shift and go to state 18
+    LPAREN          shift and go to state 19
+
+    statement                      shift and go to state 21
+    while_statement                shift and go to state 4
+    if_statement                   shift and go to state 5
+    for_statement                  shift and go to state 6
+    command                        shift and go to state 7
+    assignment                     shift and go to state 8
+    comment                        shift and go to state 9
+    arithmetic_expression          shift and go to state 10
+    insertion                      shift and go to state 11
+    pipe_command                   shift and go to state 12
+
+state 79
+
+    (39) for_statement -> FOR ID IN command DO statements . DONE
+    (3) statements -> statements . statement
+    (11) statement -> . while_statement
+    (12) statement -> . if_statement
+    (13) statement -> . for_statement
+    (14) statement -> . command
+    (15) statement -> . assignment
+    (16) statement -> . comment
+    (17) statement -> . arithmetic_expression
+    (18) statement -> . insertion
+    (19) statement -> . pipe_command
+    (30) while_statement -> . WHILE condition DO statements DONE
+    (40) if_statement -> . IF condition THEN statements ELSE statements FI
+    (39) for_statement -> . FOR ID IN command DO statements DONE
+    (20) command -> . ID
+    (21) command -> . command ID
+    (22) command -> . command NUMBER
+    (23) command -> . command STRING
+    (24) command -> . command MINUS ID
+    (25) command -> . command MINUS MINUS ID
+    (4) assignment -> . ID EQUALS expression
+    (5) assignment -> . ID EQUALS DOLLAR LPAREN arithmetic_expression RPAREN
+    (26) comment -> . HASHTAG ID
+    (32) arithmetic_expression -> . NUMBER
+    (33) arithmetic_expression -> . DOLLAR ID
+    (34) arithmetic_expression -> . LPAREN arithmetic_expression RPAREN
+    (35) arithmetic_expression -> . arithmetic_expression PLUS arithmetic_expression
+    (36) arithmetic_expression -> . arithmetic_expression MINUS arithmetic_expression
+    (37) arithmetic_expression -> . arithmetic_expression TIMES arithmetic_expression
+    (38) arithmetic_expression -> . arithmetic_expression DIVIDE arithmetic_expression
+    (27) insertion -> . command ID INSERTION ID
+    (28) insertion -> . command STRING INSERTION ID
+    (29) pipe_command -> . command PIPE command
+
+    DONE            shift and go to state 82
+    WHILE           shift and go to state 13
+    IF              shift and go to state 14
+    FOR             shift and go to state 15
+    ID              shift and go to state 16
+    HASHTAG         shift and go to state 20
+    NUMBER          shift and go to state 17
+    DOLLAR          shift and go to state 18
+    LPAREN          shift and go to state 19
+
+    command                        shift and go to state 7
+    statement                      shift and go to state 21
+    while_statement                shift and go to state 4
+    if_statement                   shift and go to state 5
+    for_statement                  shift and go to state 6
+    assignment                     shift and go to state 8
+    comment                        shift and go to state 9
+    arithmetic_expression          shift and go to state 10
+    insertion                      shift and go to state 11
+    pipe_command                   shift and go to state 12
+
+state 80
+
+    (5) assignment -> ID EQUALS DOLLAR LPAREN arithmetic_expression RPAREN .
+
+    WHILE           reduce using rule 5 (assignment -> ID EQUALS DOLLAR LPAREN arithmetic_expression RPAREN .)
+    IF              reduce using rule 5 (assignment -> ID EQUALS DOLLAR LPAREN arithmetic_expression RPAREN .)
+    FOR             reduce using rule 5 (assignment -> ID EQUALS DOLLAR LPAREN arithmetic_expression RPAREN .)
+    ID              reduce using rule 5 (assignment -> ID EQUALS DOLLAR LPAREN arithmetic_expression RPAREN .)
+    HASHTAG         reduce using rule 5 (assignment -> ID EQUALS DOLLAR LPAREN arithmetic_expression RPAREN .)
+    NUMBER          reduce using rule 5 (assignment -> ID EQUALS DOLLAR LPAREN arithmetic_expression RPAREN .)
+    DOLLAR          reduce using rule 5 (assignment -> ID EQUALS DOLLAR LPAREN arithmetic_expression RPAREN .)
+    LPAREN          reduce using rule 5 (assignment -> ID EQUALS DOLLAR LPAREN arithmetic_expression RPAREN .)
+    $end            reduce using rule 5 (assignment -> ID EQUALS DOLLAR LPAREN arithmetic_expression RPAREN .)
+    DONE            reduce using rule 5 (assignment -> ID EQUALS DOLLAR LPAREN arithmetic_expression RPAREN .)
+    ELSE            reduce using rule 5 (assignment -> ID EQUALS DOLLAR LPAREN arithmetic_expression RPAREN .)
+    FI              reduce using rule 5 (assignment -> ID EQUALS DOLLAR LPAREN arithmetic_expression RPAREN .)
+
+
+state 81
+
+    (40) if_statement -> IF condition THEN statements ELSE statements FI .
+
+    WHILE           reduce using rule 40 (if_statement -> IF condition THEN statements ELSE statements FI .)
+    IF              reduce using rule 40 (if_statement -> IF condition THEN statements ELSE statements FI .)
+    FOR             reduce using rule 40 (if_statement -> IF condition THEN statements ELSE statements FI .)
+    ID              reduce using rule 40 (if_statement -> IF condition THEN statements ELSE statements FI .)
+    HASHTAG         reduce using rule 40 (if_statement -> IF condition THEN statements ELSE statements FI .)
+    NUMBER          reduce using rule 40 (if_statement -> IF condition THEN statements ELSE statements FI .)
+    DOLLAR          reduce using rule 40 (if_statement -> IF condition THEN statements ELSE statements FI .)
+    LPAREN          reduce using rule 40 (if_statement -> IF condition THEN statements ELSE statements FI .)
+    $end            reduce using rule 40 (if_statement -> IF condition THEN statements ELSE statements FI .)
+    DONE            reduce using rule 40 (if_statement -> IF condition THEN statements ELSE statements FI .)
+    ELSE            reduce using rule 40 (if_statement -> IF condition THEN statements ELSE statements FI .)
+    FI              reduce using rule 40 (if_statement -> IF condition THEN statements ELSE statements FI .)
+
+
+state 82
+
+    (39) for_statement -> FOR ID IN command DO statements DONE .
+
+    WHILE           reduce using rule 39 (for_statement -> FOR ID IN command DO statements DONE .)
+    IF              reduce using rule 39 (for_statement -> FOR ID IN command DO statements DONE .)
+    FOR             reduce using rule 39 (for_statement -> FOR ID IN command DO statements DONE .)
+    ID              reduce using rule 39 (for_statement -> FOR ID IN command DO statements DONE .)
+    HASHTAG         reduce using rule 39 (for_statement -> FOR ID IN command DO statements DONE .)
+    NUMBER          reduce using rule 39 (for_statement -> FOR ID IN command DO statements DONE .)
+    DOLLAR          reduce using rule 39 (for_statement -> FOR ID IN command DO statements DONE .)
+    LPAREN          reduce using rule 39 (for_statement -> FOR ID IN command DO statements DONE .)
+    $end            reduce using rule 39 (for_statement -> FOR ID IN command DO statements DONE .)
+    DONE            reduce using rule 39 (for_statement -> FOR ID IN command DO statements DONE .)
+    ELSE            reduce using rule 39 (for_statement -> FOR ID IN command DO statements DONE .)
+    FI              reduce using rule 39 (for_statement -> FOR ID IN command DO statements DONE .)
+
+WARNING: 
+WARNING: Conflicts:
+WARNING: 
+WARNING: shift/reduce conflict for ID in state 7 resolved as shift
+WARNING: shift/reduce conflict for NUMBER in state 7 resolved as shift
+WARNING: shift/reduce conflict for ID in state 43 resolved as shift
+WARNING: shift/reduce conflict for NUMBER in state 43 resolved as shift
+WARNING: shift/reduce conflict for PLUS in state 45 resolved as shift
+WARNING: shift/reduce conflict for MINUS in state 45 resolved as shift
+WARNING: shift/reduce conflict for TIMES in state 45 resolved as shift
+WARNING: shift/reduce conflict for DIVIDE in state 45 resolved as shift
+WARNING: shift/reduce conflict for PLUS in state 46 resolved as shift
+WARNING: shift/reduce conflict for MINUS in state 46 resolved as shift
+WARNING: shift/reduce conflict for TIMES in state 46 resolved as shift
+WARNING: shift/reduce conflict for DIVIDE in state 46 resolved as shift
+WARNING: shift/reduce conflict for PLUS in state 47 resolved as shift
+WARNING: shift/reduce conflict for MINUS in state 47 resolved as shift
+WARNING: shift/reduce conflict for TIMES in state 47 resolved as shift
+WARNING: shift/reduce conflict for DIVIDE in state 47 resolved as shift
+WARNING: shift/reduce conflict for PLUS in state 48 resolved as shift
+WARNING: shift/reduce conflict for MINUS in state 48 resolved as shift
+WARNING: shift/reduce conflict for TIMES in state 48 resolved as shift
+WARNING: shift/reduce conflict for DIVIDE in state 48 resolved as shift
